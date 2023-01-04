@@ -1,12 +1,14 @@
 #pragma once
 #include<vector>
 #include<iostream>
+
+#include "BasicTexture.h"
 class Model {
     protected:
         unsigned int VAO = 0;
         unsigned int EBO;
         unsigned int indices_count = 0;
-        unsigned int vbo_count = 0;
+        BasicTexture texture;
         std::vector<unsigned int> VBOs;
 
     public:

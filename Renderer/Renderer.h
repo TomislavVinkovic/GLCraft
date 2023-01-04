@@ -4,27 +4,26 @@
 #include "glm.hpp"
 #include "Shader.hpp"
 
-#include "CubeRenderer.h"
-#include "ChunkRenderer.h"
+#include "Cube/CubeRenderer.h"
+#include "Chunk/ChunkRenderer.h"
 
 class Renderer {
     private:
         glm::vec4 clearColor;
         CubeRenderer cubeRenderer;
-        ChunkRenderer chunkRenderer;
+        ChunkRenderer chunkRenderer{};
     public:
         Renderer(
             const std::string& cubeVertexPath,
             const std::string& cubeFragmentPath,
-            const std::string& cubeTexturePath,
+            const std::vector<std::string>& cubeTextures,
             glm::vec4 clearColor = glm::vec4(0.f, 0.77f, 1.f, 1.0f)
-        ) : cubeRenderer(CubeRenderer(cubeVertexPath, cubeFragmentPath, cubeTexturePath)){
+        ) : cubeRenderer(CubeRenderer(cubeVertexPath, cubeFragmentPath, cubeTextures)){
             this->clearColor = clearColor;
             glEnable(GL_DEPTH_TEST); //ukljuci z-buffer
-            glEnable(GL_CULL_FACE);
         }
 
-        void drawCube(const glm::vec3& pos);
+        //void drawCube(const glm::vec3& pos);
         //void drawChunk(const glm::vec3& pos);
 
         void setCubeRenderer(const CubeRenderer& cubeRenderer);

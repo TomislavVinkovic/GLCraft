@@ -6,7 +6,6 @@
 
 #include "Context.h"
 #include "Camera.h"
-#include "StateAbstract.h"
 #include "Renderer.h"
 
 class Application {
@@ -20,8 +19,6 @@ class Application {
         }
 
     private:
-        std::vector<std::unique_ptr<StateAbstract>> states;
-
         Context context;
         Renderer renderer;
 

@@ -7,7 +7,12 @@
 #include <stb_image.h>
 
 class BasicTexture {
-    unsigned int ID;
+    private:
+        void setTextureParameters();
+        std::string textureFilepath;
+        GLenum format;
+        unsigned int ID = 0;
+
     void loadAndApplyTextureImage(const std::string& filePath, GLenum format = GL_RGB);
     public:
         BasicTexture() = default;
@@ -16,4 +21,12 @@ class BasicTexture {
 
         void changeTexture(const std::string& filePath, GLenum format = GL_RGB);
         void bindTexture() const;
+
+        //operators
+        BasicTexture operator=(const BasicTexture& texture);
+
+        //getters
+        unsigned int getId() const {
+            return ID;
+        }
 };

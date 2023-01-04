@@ -13,7 +13,7 @@
 #include "Application.h"
 #include "Camera.h"
 int main() {
-    Application App(800, 600, "GLCraft", Camera(800, 600));
+    Application App(1920, 1080, "GLCraft", Camera(1920, 1080));
     App.runLoop();
     return 0;
 }

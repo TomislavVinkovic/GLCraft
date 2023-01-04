@@ -1,8 +1,8 @@
 #include "Renderer.h"
 
-void Renderer::drawCube(const glm::vec3 &pos) {
-    cubeRenderer.add(pos);
-}
+//void Renderer::drawCube(const glm::vec3 &pos) {
+//    cubeRenderer.add(pos);
+//}
 
 void Renderer::setCubeRenderer(const CubeRenderer &cubeRenderer) {
     this->cubeRenderer = cubeRenderer;
@@ -18,7 +18,8 @@ void Renderer::render(GLFWwindow *window, Camera &camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //std::cout << "Entering cube renderer" << std::endl;
-    cubeRenderer.render(camera);
+    //cubeRenderer.render(camera);
+    chunkRenderer.render(camera);
 
     //std::cout << "swapping buffers" << std::endl;
     glfwSwapBuffers(window);

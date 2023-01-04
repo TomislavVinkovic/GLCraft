@@ -20,9 +20,9 @@ void Block::setIndices(std::vector<GLuint> indices) {
 void Block::setVertices(std::vector<GLfloat> vertices) {
     glBindVertexArray(VAO);
 
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    VBOs.push_back(0);
+    glGenBuffers(1, &VBOs.back());
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs.back());
     glBufferData(
             GL_ARRAY_BUFFER,
             vertices.size() * sizeof(GLfloat),
@@ -37,6 +37,4 @@ void Block::setVertices(std::vector<GLfloat> vertices) {
     //atribut teksturne koordinate
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    VBOs.push_back(VBO);
 }

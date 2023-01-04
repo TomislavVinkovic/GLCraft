@@ -1,13 +1,14 @@
 #include "CubeRenderer.h"
 
 CubeRenderer::CubeRenderer(
-        const std::string& vertexShaderPath,
-       const std::string& fragmentShaderPath,
-       const std::string& textureFilePath
+    const std::string& vertexShaderPath,
+    const std::string& fragmentShaderPath,
+    const std::vector<std::string>& textures
     ) : shader(Shader(vertexShaderPath.c_str(), fragmentShaderPath.c_str())),
-        texture(BasicTexture(textureFilePath.c_str())){
+    testTexture(BasicTexture(textures[0].c_str())){
     //default cube
     std::vector<GLfloat> vertices = {
+            //Back
             1, 0, 0, 0.f, 0.f,
             0, 0, 0, 1.f, 0.f,
             0, 1, 0, 1.f, 1.f,
@@ -67,38 +68,46 @@ CubeRenderer::CubeRenderer(
     block.setVertices(vertices);
     block.setIndices(indices);
 
-    add(glm::vec3(0,0,0));
+//    for(auto text : textures) {
+//        std::cout << text << std::endl;
+//        this->textures.push_back(BasicTexture(text.c_str()));
+//    }
+
+
+    add({glm::vec3(0,0,0), 0});
+
+//    for(int k = 0; k < 1; k++) {
+//        for(int i = 0; i < 1; i++) {
+//            for(int j = 0; j < 1; j++) {
+//                add({
+//                    glm::vec3(i, k, j), 0
+//                });
+//                }
+//            }
+//    }
 }
 
-//I WILL ADD THESE LATER
-
-//CubeRenderer::CubeRenderer(const CubeRenderer &cb) : CubeRenderer() {
-//    pos = cb.pos;
-//}
-//
-//void CubeRenderer::operator=(const CubeRenderer &cb) {
-//    pos = cb.pos;
-//}
-
-void CubeRenderer::add(const glm::vec3 &pos) {
+void CubeRenderer::add(const PositionTexturePair &pos) {
     this->pos.push_back(pos);
 }
 
 void CubeRenderer::render(Camera& camera) {
-    texture.bindTexture();
     shader.use();
+    testTexture.bindTexture();
     block.bindVAO();
+    for(const auto& p : pos) {
+//        shader.use();
+//        //textures[p.second].bindTexture();
+//        block.bindVAO();
 
-    //std::cout << "CubeRenderer[render] : Setting projection matrix" << std::endl;
-    shader.setMatrix4fv("projection", camera.GetProjectionMatrix());
 
-    for(const glm::vec3& p : pos) {
-        //std::cout << p.x << " " << p.y << " " << p.z << std::endl;
         glm::mat4 model = glm::mat4(1.f);
-        model = glm::translate(model, p);
+        model = glm::translate(model, p.first);
 
+        shader.setMatrix4fv("projection", camera.GetProjectionMatrix());
         shader.setMatrix4fv("model", model);
         shader.setMatrix4fv("view", camera.GetViewMatrix());
+
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, block.getEBO());
         glDrawElements(GL_TRIANGLES, block.getIndicesCount(), GL_UNSIGNED_INT, 0);
     }
