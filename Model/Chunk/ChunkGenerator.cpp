@@ -12,8 +12,6 @@ Chunk ChunkGenerator::generate() {
             for(int z = chunkPosition.z; z < chunkPosition.z + chunkDimensions.z; z += 1) {
                 glm::vec3 position = glm::vec3(x,y,z);
                 const auto& block = chunk.block(position);
-                //std::cout << x << " " << y << " " << z << std::endl;
-                //no need to draw an air block
                 if(block.getType() == ChunkBlockType::Air) {
                     continue;
                 }
@@ -52,4 +50,10 @@ bool ChunkGenerator::shouldGenerateFace(const std::vector<GLfloat> &face, const 
 
 int ChunkGenerator::getNumberOfFaces() {
     return no_faces;
+}
+
+void ChunkGenerator::newChunk(const glm::vec3& dimensions, const glm::vec3& position) {
+    chunk = Chunk(dimensions, position);
+    no_faces = 0;
+    directions.update(position.x,position.y,position.z);
 }

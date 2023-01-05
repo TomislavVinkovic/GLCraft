@@ -14,8 +14,9 @@
 
 class ChunkGenerator{
     public:
-        explicit ChunkGenerator(const glm::vec3& dimensions, const glm::vec3& position = {0,0,0});
+        explicit ChunkGenerator(const glm::vec3& dimensions={16,16,16}, const glm::vec3& position = {0,0,0});
         Chunk generate();
+        void newChunk(const glm::vec3& dimensions={16,16,16}, const glm::vec3& position = {0,0,0});
 
         //getters
         int getNumberOfFaces();

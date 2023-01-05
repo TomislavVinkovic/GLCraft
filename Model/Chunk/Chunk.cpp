@@ -15,7 +15,6 @@ Chunk::Chunk(const glm::vec3 &dimensions, const glm::vec3& position) : dimension
             }
         }
     }
-    std::cout << blocks.size() << std::endl;
 }
 
 const std::vector<ChunkBlock> &Chunk::getBlocks() {
@@ -39,9 +38,10 @@ ChunkBlock Chunk::block(const glm::vec3 &searchPosition) const {
     }
     //ili Flat[x + WIDTH * (y + DEPTH * z)] = Original[x, y, z]
     auto xOffset = abs(position.x);
-    auto yOffsetFromZero = abs(position.y);
-    auto zOffsetFromZero = abs(position.z);
-    return blocks[(searchPosition.x + xOffset) + dimensions.x * ((searchPosition.y + yOffsetFromZero) + dimensions.y * (searchPosition.z + zOffsetFromZero))];
+    auto yOffsetFromZero = position.y;
+    auto zOffsetFromZero = position.z;
+    return blocks[(searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero))];
+    //return blocks[(searchPosition.x + xOffset)]
 }
 
 void Chunk::addFace(const std::vector<GLfloat> &face, const glm::vec3 &blockPosition) {
