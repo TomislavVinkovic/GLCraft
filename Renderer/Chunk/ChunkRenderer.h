@@ -11,8 +11,11 @@
 #include "ChunkBlockType.h"
 #include "ChunkGenerator.h"
 #include "Shader.hpp"
-#include "BasicTexture.h"
 #include "AbstractObjectRenderer.h"
+#include "AdjacentChunkPositions.h"
+
+#include "BasicTexture.h"
+#include "TextureAtlas.h"
 
 #include <iostream>
 
@@ -30,7 +33,6 @@ class ChunkRenderer : public AbstractObjectRenderer {
 
     private:
         Shader shader;
-        BasicTexture testTexture;
+        TextureAtlas testTexture;
         std::vector<Chunk> chunks;
-        Chunk testChunk;
 };

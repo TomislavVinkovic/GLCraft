@@ -13,12 +13,18 @@
 
 class Chunk {
     private:
+        //TODO: remove hardcoding
+        //I will hardcode this for now
+
+        float TEXTURE_PACK_SIZE = 256.f;
+        float SINGLE_TEXTURE_SIZE = 16.f;
+
         unsigned int VAO = 0;
         unsigned int EBO = 0;
         unsigned int VBO = 0;
 
         std::vector<ChunkBlock> blocks;
-        glm::vec3 dimensions;
+        glm::vec3 dimensions{16,16,16};
         glm::vec3 position;
 
         void genEbo();
@@ -31,8 +37,7 @@ class Chunk {
 
     public:
         //constructors and destructors
-        Chunk() = default;
-        Chunk(const glm::vec3& dimensions, const glm::vec3& position={0,0,0});
+        Chunk(const glm::vec3& dimensions={16,16,16}, const glm::vec3& position={0,0,0});
         //TODO: IMPLEMENT DESTRUCTOR
 
         //getters
@@ -45,7 +50,11 @@ class Chunk {
 
 
         //setters
-        void addFace(const std::vector<GLfloat>& face, const glm::vec3& blockPosition);
+        void addFace(
+                const std::vector<GLfloat>& face,
+                const glm::vec3& blockPosition,
+                const std::vector<GLfloat>& textureCoords
+        );
 
         //Graphics data commands
         GLuint currentVIndex = 0; //TODO: make private

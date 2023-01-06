@@ -7,16 +7,17 @@
 #include "glad/glad.h"
 #include<GLFW/glfw3.h>
 
+#include "ChunkBlockData.h"
+
 //TODO: Implement a texture atlas and add it here
 
 class ChunkBlock {
-    ChunkBlockType type;
+    ChunkBlockData blockData;
     glm::vec3 position;
 public:
-    ChunkBlock(glm::vec3 position);
-    ChunkBlock(glm::vec3 position, const ChunkBlockType& blockType);
+    ChunkBlock(glm::vec3 position, const ChunkBlockData& blockData = block_type::AirBlock);
 
     //getters
     const glm::vec3& getPosition() const;
-    const ChunkBlockType& getType() const;
+    const ChunkBlockData& getData() const;
 };

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <iostream>
 #include "glad/glad.h"
@@ -6,20 +7,23 @@
 
 #include "TextureAbstract.h"
 
-class BasicTexture : public TextureAbstract {
+class TextureAtlas : public TextureAbstract {
     private:
         void setTextureParameters() override;
         void loadAndApplyTextureImage(const std::string &filePath) override;
 
+        int TEXTURE_PACK_SIZE = 256;
+        int SINGLE_TEXTURE_SIZE = 16;
+
 
     public:
-        BasicTexture() = default;
-        BasicTexture(const std::string& filePath, GLenum format = GL_RGB);
-        ~BasicTexture();
+        TextureAtlas(const std::string& filePath, GLenum format = GL_RGB, int SINGLE_TEXTURE_SIZE=16);
+        TextureAtlas() = default;
+        ~TextureAtlas();
 
         void changeTexture(const std::string &filePath) override;
         void bindTexture() const override;
 
         //operators
-        BasicTexture operator=(const BasicTexture& texture);
+        TextureAtlas operator=(const TextureAtlas& texture);
 };

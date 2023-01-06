@@ -3,19 +3,19 @@
 BasicTexture::BasicTexture(const std::string &filePath, GLenum format) {
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
+    this->format = format;
 
     setTextureParameters();
-
-    loadAndApplyTextureImage(filePath, format);
+    loadAndApplyTextureImage(filePath);
 }
 
 BasicTexture::~BasicTexture() {
     glDeleteTextures(1, &ID);
 }
 
-void BasicTexture::changeTexture(const std::string &filePath, GLenum format) {
+void BasicTexture::changeTexture(const std::string &filePath) {
     glBindTexture(GL_TEXTURE_2D, ID);
-    loadAndApplyTextureImage(filePath, format);
+    loadAndApplyTextureImage(filePath);
 }
 
 void BasicTexture::bindTexture() const {
@@ -23,7 +23,7 @@ void BasicTexture::bindTexture() const {
     glBindTexture(GL_TEXTURE_2D, ID);
 }
 
-void BasicTexture::loadAndApplyTextureImage(const std::string &filePath, GLenum format) {
+void BasicTexture::loadAndApplyTextureImage(const std::string &filePath) {
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     unsigned char *data = stbi_load(
@@ -38,11 +38,11 @@ void BasicTexture::loadAndApplyTextureImage(const std::string &filePath, GLenum 
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture!" << std::endl;
+        return;
     }
     stbi_image_free(data);
     textureFilepath = filePath;
-    this->format = format;
     std::cout << "Texture loaded successfully" << std::endl;
 }
 
@@ -50,10 +50,11 @@ BasicTexture BasicTexture::operator=(const BasicTexture &texture) {
     if(ID != 0) glDeleteTextures(1, &ID);
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
+    format = texture.format;
 
     setTextureParameters();
 
-    loadAndApplyTextureImage(texture.textureFilepath, texture.format);
+    loadAndApplyTextureImage(texture.textureFilepath);
 
     return *this;
 }

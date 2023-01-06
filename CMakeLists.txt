@@ -15,7 +15,7 @@ set(SOURCE_FILES
         Renderer/Chunk/ChunkRenderer.cpp
         Model/Block/Block.cpp
         Texture/BasicTexture.cpp
-        Camera/Movement.h Model/Chunk/ChunkBlock.cpp Model/Chunk/ChunkBlock.h Model/Chunk/Chunk.cpp Model/Chunk/Chunk.h Model/Chunk/ChunkGenerator.cpp Model/Chunk/ChunkGenerator.h Model/Chunk/ChunkBlockType.h Model/Chunk/Face.h Model/Chunk/Face.h Model/Chunk/AdjacentBlockPositions.h Exceptions/NotImplementedException.h Renderer/AbstractObjectRenderer.h Model/Chunk/AdjacentChunkPositions.h)
+        Camera/Movement.h Model/Chunk/ChunkBlock.cpp Model/Chunk/ChunkBlock.h Model/Chunk/Chunk.cpp Model/Chunk/Chunk.h Model/Chunk/ChunkGenerator.cpp Model/Chunk/ChunkGenerator.h Model/Chunk/ChunkBlockType.h Model/Chunk/Face.h Model/Chunk/Face.h Model/Chunk/AdjacentBlockPositions.h Exceptions/NotImplementedException.h Renderer/AbstractObjectRenderer.h Model/Chunk/AdjacentChunkPositions.h Texture/TextureAbstract.h Texture/TextureAtlas.cpp Texture/TextureAtlas.h Model/Chunk/ChunkBlockData.h)
 
 
 add_executable(GLCraft ${SOURCE_FILES} Application/Context.cpp Application/Context.h Model/Chunk/Face.h)

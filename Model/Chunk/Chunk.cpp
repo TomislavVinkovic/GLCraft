@@ -10,8 +10,7 @@ Chunk::Chunk(const glm::vec3 &dimensions, const glm::vec3& position) : dimension
                         static_cast<float>(i), //x
                         static_cast<float>(k), //y
                         static_cast<float>(j) //z
-                ),
-        ChunkBlockType::Grass));
+                ), block_type::GrassBlock));
             }
         }
     }
@@ -34,32 +33,33 @@ ChunkBlock Chunk::block(const glm::vec3 &searchPosition) const {
     if(
         !containedInX || !containedInY || !containedInZ
     ) {
-        return ChunkBlock(searchPosition, ChunkBlockType::Air);
+        return ChunkBlock(searchPosition, block_type::AirBlock);
     }
-    //ili Flat[x + WIDTH * (y + DEPTH * z)] = Original[x, y, z]
     auto xOffset = abs(position.x);
     auto yOffsetFromZero = position.y;
     auto zOffsetFromZero = position.z;
     return blocks[(searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero))];
-    //return blocks[(searchPosition.x + xOffset)]
 }
 
-void Chunk::addFace(const std::vector<GLfloat> &face, const glm::vec3 &blockPosition) {
-    //there are 3 vertices inside a face
-//    std::cout << blockPosition.x << " ";
-//    std::cout << blockPosition.y << " ";
-//    std::cout << blockPosition.z << std::endl;
-//    std::cout << face[0] + this->position.x  + blockPosition.x << " ";
-//    std::cout << face[1] + this->position.y  + blockPosition.y << " ";
-//    std::cout << face[2] + this->position.z  + blockPosition.z << std::endl;
-    for(int i = 0, j = 0; i < 4; i++) {
+void Chunk::addFace(
+        const std::vector<GLfloat> &face,
+        const glm::vec3 &blockPosition,
+        const std::vector<GLfloat>& textureCoords
+) {
+    for(int i = 0, j = 0, k=0; i < 4; i++) {
         vertices.push_back(face[j++] + this->position.x + blockPosition.x);
         vertices.push_back(face[j++] + this->position.y + blockPosition.y);
         vertices.push_back(face[j++] + this->position.z + blockPosition.z);
 
+        j += 2; //skip the old texture coordinates
+
         //pushing back texture coordinates
-        vertices.push_back(face[j++]); //texture x
-        vertices.push_back(face[j++]); //texture y
+        //both coordinates are normalized between 0 and 1
+        float textureX = static_cast<float>(textureCoords[k++])/TEXTURE_PACK_SIZE;
+        float textureY = 1.f - static_cast<float>(textureCoords[k++])/TEXTURE_PACK_SIZE;
+        //std::cout << textureX << " " << textureY << std::endl;
+        vertices.push_back(textureX); //texture x
+        vertices.push_back(textureY); //texture y
     }
     //update indices
     indices.insert(indices.end(), {
