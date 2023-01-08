@@ -18,8 +18,13 @@ void Renderer::render(GLFWwindow *window, Camera &camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //std::cout << "Entering cube renderer" << std::endl;
+    glEnable(GL_CULL_FACE);
     //cubeRenderer.render(camera);
     chunkRenderer.render(camera);
+    glDisable(GL_DEPTH_TEST);
+    uiRenderer.render();
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 
     //std::cout << "swapping buffers" << std::endl;
     glfwSwapBuffers(window);
@@ -27,6 +32,7 @@ void Renderer::render(GLFWwindow *window, Camera &camera) {
 }
 
 void Renderer::clearData() {
+    uiRenderer.deleteGraphicsData();
     cubeRenderer.deleteData();
     chunkRenderer.deleteData();
 }
