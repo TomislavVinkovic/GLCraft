@@ -16,6 +16,7 @@ class ChunkBlock {
     glm::vec3 position;
 public:
     ChunkBlock(glm::vec3 position, const ChunkBlockData& blockData = block_type::AirBlock);
+    ChunkBlock operator=(const ChunkBlock& block);
 
     //getters
     const glm::vec3& getPosition() const;

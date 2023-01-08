@@ -16,23 +16,26 @@
 
 #include "BasicTexture.h"
 #include "TextureAtlas.h"
+#include "State.h"
 
 #include <iostream>
 
 class ChunkRenderer : public AbstractObjectRenderer {
     public:
-        ChunkRenderer();
+        ChunkRenderer(World* world);
         ChunkRenderer(
                 const std::string& vertexShaderPath,
                 const std::string& fragmentShaderPath,
-                const std::string& texturePath
+                const std::string& texturePath,
+                World* world
+
         );
 
         void render(Camera& camera);
         void deleteData();
 
     private:
+        World* world;
         Shader shader;
         TextureAtlas testTexture;
-        std::vector<Chunk> chunks;
 };

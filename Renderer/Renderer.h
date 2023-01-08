@@ -9,16 +9,20 @@
 
 class Renderer {
     private:
+        World* world;
         glm::vec4 clearColor;
         CubeRenderer cubeRenderer;
-        ChunkRenderer chunkRenderer{};
+        ChunkRenderer chunkRenderer;
     public:
         Renderer(
             const std::string& cubeVertexPath,
             const std::string& cubeFragmentPath,
             const std::vector<std::string>& cubeTextures,
+            World* world,
             glm::vec4 clearColor = glm::vec4(0.f, 0.77f, 1.f, 1.0f)
-        ) : cubeRenderer(CubeRenderer(cubeVertexPath, cubeFragmentPath, cubeTextures)){
+        ) : cubeRenderer(CubeRenderer(cubeVertexPath, cubeFragmentPath, cubeTextures)),
+            chunkRenderer(world){
+            this->world = world;
             this->clearColor = clearColor;
             glEnable(GL_DEPTH_TEST); //ukljuci z-buffer
         }

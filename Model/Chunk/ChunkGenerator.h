@@ -16,15 +16,22 @@
 #include <unordered_map>
 #include<string>
 
+typedef std::unordered_map<std::string, Chunk*> ChunkMap;
+
 class ChunkGenerator{
     public:
+        ChunkGenerator() = default;
         explicit ChunkGenerator(const std::vector<glm::vec3>& chunkPositions, const glm::vec3& dimensions={16,16,16});
         std::vector<Chunk> generate();
+        void regenerate(std::vector<Chunk>& chunks, std::vector<Chunk*> chunksToRegenerate);
 
         //getters
         int getNumberOfFaces();
 
     private:
+
+        void generateChunk(Chunk& chunk, const ChunkMap& chunkMap);
+        ChunkMap generateChunkMap(std::vector<Chunk>& chunks);
         glm::vec3 dimensions;
         std::vector<glm::vec3> chunkPositions;
         int no_faces = 0;
@@ -42,7 +49,7 @@ class ChunkGenerator{
                 Chunk& chunk,
                 const glm::vec3& adjBlockPosition,
                 const glm::vec3& adjChunkPosition,
-                const std::unordered_map<std::string, Chunk*>& chunkMap
+                const ChunkMap& chunkMap
         );
 
         void addFace(
@@ -52,6 +59,6 @@ class ChunkGenerator{
                 const glm::vec3& position,
                 const glm::vec3& adjBlockPos,
                 const glm::vec3& adjChunkPosition,
-                const std::unordered_map<std::string, Chunk*>& chunkMap
+                const ChunkMap& chunkMap
         );
 };

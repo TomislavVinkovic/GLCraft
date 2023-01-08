@@ -40,13 +40,13 @@ void Context::handleKeyboardInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(Movement::FORWARD, deltaTime);
+        state.player.getCamera().ProcessKeyboard(Movement::FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(Movement::BACKWARD, deltaTime);
+        state.player.getCamera().ProcessKeyboard(Movement::BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(Movement::LEFT, deltaTime);
+        state.player.getCamera().ProcessKeyboard(Movement::LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(Movement::RIGHT, deltaTime);
+        state.player.getCamera().ProcessKeyboard(Movement::RIGHT, deltaTime);
 }
 
 void Context::handleKeyboardInterrupt(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -76,11 +76,11 @@ void Context::handleMouseMovement(GLFWwindow *window, double xPos, double yPos) 
     lastX = xPosf;
     lastY = yPosf;
 
-    camera.ProcessMouseMovement(xOffset, yOffset);
+    state.player.getCamera().ProcessMouseMovement(xOffset, yOffset);
 }
 
 void Context::handleMouseZoom(GLFWwindow *window, double xOffset, double yOffset) {
-    camera.ProcessMouseScroll(static_cast<float>(yOffset));
+    state.player.getCamera().ProcessMouseScroll(static_cast<float>(yOffset));
 }
 
 void Context::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -113,9 +113,29 @@ void Context::initCallbacks() {
         );
     };
 
+    auto mouseclick_func = [](GLFWwindow* w, int button, int action, int mods) {
+        static_cast<Context*>(glfwGetWindowUserPointer(w))->handleMouseClick(
+                w, button, action, mods
+        );
+    };
+
     //assignanje tih funkcija na instancu prozora preko opengl-a
     glfwSetFramebufferSizeCallback(window, framebuffer_func);
     glfwSetKeyCallback(window, interrupt_func);
     glfwSetCursorPosCallback(window, mousemove_func);
     glfwSetScrollCallback(window, mousezoom_func);
+    glfwSetMouseButtonCallback(window, mouseclick_func);
+}
+
+void Context::handleMouseClick(GLFWwindow *window, int button, int action, int mods) {
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        //zasad samo cast ray
+        //std::cout << "Left click!" << std::endl;
+        state.world.castRay(state.player.getCamera(), button);
+    }
+    else if(button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        //zasad samo cast ray
+        //std::cout << "Right click!" << std::endl;
+        state.world.castRay(state.player.getCamera(), button);
+    }
 }

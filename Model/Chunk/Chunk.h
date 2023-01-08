@@ -35,6 +35,8 @@ class Chunk {
         std::vector<GLfloat> vertices;
         std::vector<GLuint> indices;
 
+        std::vector<ChunkBlock>::iterator blockInner(const glm::vec3& searchPosition);
+
     public:
         //constructors and destructors
         Chunk(const glm::vec3& dimensions={16,16,16}, const glm::vec3& position={0,0,0});
@@ -42,12 +44,11 @@ class Chunk {
 
         //getters
         const std::vector<ChunkBlock>& getBlocks();
-        ChunkBlock block(const glm::vec3& searchPosition) const;
+        ChunkBlock block(const glm::vec3& searchPosition, bool logInfo=false) const;
         const glm::vec3& getDimensions() const;
         const glm::vec3& getPosition() const;
         const std::vector<GLuint>& getIndices() const;
         const std::vector<GLfloat>& getVertices() const;
-
 
         //setters
         void addFace(
@@ -55,6 +56,7 @@ class Chunk {
                 const glm::vec3& blockPosition,
                 const std::vector<GLfloat>& textureCoords
         );
+        void editBlock(const glm::vec3& position, const ChunkBlockData& blockData);
 
         //Graphics data commands
         GLuint currentVIndex = 0; //TODO: make private

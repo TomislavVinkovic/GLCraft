@@ -11,3 +11,10 @@ const glm::vec3 &ChunkBlock::getPosition() const{
 const ChunkBlockData &ChunkBlock::getData() const {
     return blockData;
 }
+
+ChunkBlock ChunkBlock::operator=(const ChunkBlock &block) {
+    blockData = block.blockData;
+    position = block.position;
+
+    return *this;
+}

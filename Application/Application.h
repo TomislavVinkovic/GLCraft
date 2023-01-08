@@ -15,7 +15,7 @@ class Application {
         void runLoop();
 
         Camera& getCamera() {
-            return this->context.camera;
+            return this->context.state.player.getCamera();
         }
 
     private:

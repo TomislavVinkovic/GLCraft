@@ -2,13 +2,14 @@
 
 #include "ChunkBlockType.h"
 #include "glm.hpp"
+#include "string"
 
 struct ChunkBlockData {
 
-    explicit ChunkBlockData(ChunkBlockType type) : blockType(type){}
-
+    ChunkBlockData(ChunkBlockType type, const std::string& name) : name(name), blockType(type){}
     ChunkBlockData(
             ChunkBlockType type,
+            const std::string& name,
             const glm::vec2& topFaceTextureMin,
             const glm::vec2& topFaceTextureMax,
             const glm::vec2& bottomFaceTextureMin,
@@ -21,7 +22,7 @@ struct ChunkBlockData {
             const glm::vec2& frontFaceTextureMax,
             const glm::vec2& backFaceTextureMin,
             const glm::vec2& backFaceTextureMax
-    ) : blockType(type), topFaceTextureMax(topFaceTextureMax), topFaceTextureMin(topFaceTextureMin),
+    ) : blockType(type), name(name), topFaceTextureMax(topFaceTextureMax), topFaceTextureMin(topFaceTextureMin),
     bottomFaceTextureMax(bottomFaceTextureMax), bottomFaceTextureMin(bottomFaceTextureMin),
     leftFaceTextureMax(leftFaceTextureMax), leftFaceTextureMin(leftFaceTextureMin),
     rightFaceTextureMax(rightFaceTextureMax), rightFaceTextureMin(rightFaceTextureMin),
@@ -30,6 +31,7 @@ struct ChunkBlockData {
 
 
     ChunkBlockType blockType{ChunkBlockType::Air};
+    std::string name;
     glm::vec2 topFaceTextureMin{-1,-1};
     glm::vec2 topFaceTextureMax{-1,-1};
     glm::vec2 bottomFaceTextureMin{-1,-1};
@@ -45,10 +47,10 @@ struct ChunkBlockData {
 };
 
 namespace block_type {
-    const ChunkBlockData AirBlock= ChunkBlockData(ChunkBlockType::Air);
+    const ChunkBlockData AirBlock= ChunkBlockData(ChunkBlockType::Air, "Air");
 
     const ChunkBlockData GrassBlock = ChunkBlockData(
-        ChunkBlockType::Grass, {0,240}, {16, 256},
+        ChunkBlockType::Grass, "Grass", {0,240}, {16, 256},
         {32,240}, {48,256},
         {16,240},{32,256},{16,240},
         {32,256},{16,240},

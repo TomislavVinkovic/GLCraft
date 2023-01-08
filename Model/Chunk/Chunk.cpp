@@ -24,8 +24,10 @@ const glm::vec3 &Chunk::getDimensions() const{
     return dimensions;
 }
 
-ChunkBlock Chunk::block(const glm::vec3 &searchPosition) const {
-
+ChunkBlock Chunk::block(const glm::vec3 &searchPosition, bool logInfo) const {
+    if(logInfo) {
+        //std::cout << searchPosition.x << " " << searchPosition.y << " " << searchPosition.z << std::endl;
+    }
     //ako je blok out of bounds, vrati air blok, to znaci da se lice nece renderati
     bool containedInX = searchPosition.x >= position.x && searchPosition.x < position.x + dimensions.x;
     bool containedInY = searchPosition.y >= position.y && searchPosition.y < position.y + dimensions.y;
@@ -35,11 +37,20 @@ ChunkBlock Chunk::block(const glm::vec3 &searchPosition) const {
     ) {
         return ChunkBlock(searchPosition, block_type::AirBlock);
     }
-    auto xOffset = abs(position.x);
+//    if(logInfo) {
+//        std::cout << "block found" << std::endl;
+//    }
+    auto xOffset = position.x;
     auto yOffsetFromZero = position.y;
     auto zOffsetFromZero = position.z;
+    ChunkBlock block = blocks[(searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero))];
+//    if(block.getData().blockType != block_type::AirBlock.blockType && logInfo) {
+//        std::cout << "Not air" << std::endl;
+//    }
     return blocks[(searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero))];
 }
+
+
 
 void Chunk::addFace(
         const std::vector<GLfloat> &face,
@@ -72,6 +83,7 @@ void Chunk::addFace(
         currentVIndex
     });
     currentVIndex += 4;
+    //std::cout << vertices.size() << std::endl;
 }
 
 const glm::vec3 &Chunk::getPosition() const{
@@ -154,9 +166,23 @@ unsigned int Chunk::getEBO() const{
 
 void Chunk::updateGraphicsData() {
     //TODO: IMPLEMENT EXCEPTION HANDLING
-    //TODO: IMPLEMENT THIS FUNCTION
-    std::cout << "Update graphics data not implemented" << std::endl;
-    return;
+    bindVAO();
+    bindVBO();
+    glBufferData(
+            GL_ARRAY_BUFFER,
+            vertices.size() * sizeof(GLfloat),
+            vertices.data(),
+            GL_STATIC_DRAW //mozda ce morati biti dynamic
+    );
+
+    bindEBO();
+    glBufferData(
+            GL_ELEMENT_ARRAY_BUFFER,
+            indices.size() * sizeof(GLuint),
+            indices.data(),
+            GL_STATIC_DRAW
+    );
+    //std::cout << "Graphics data updated" << std::endl;
 }
 
 const std::vector<GLuint> &Chunk::getIndices() const {
@@ -181,4 +207,29 @@ Chunk Chunk::operator=(Chunk chunk) {
 
 const std::vector<GLfloat> &Chunk::getVertices() const {
     return vertices;
+}
+
+void Chunk::editBlock(const glm::vec3 &searchPosition, const ChunkBlockData& blockData) {
+    auto block = blockInner(searchPosition);
+    if(block != blocks.end()) {
+        //std::cout << block->getPosition().x << " " << block->getPosition().y << " " << block->getPosition().z << " " << std::endl;
+        *block = ChunkBlock(block->getPosition(), blockData);
+        vertices.clear();
+        indices.clear();
+        currentVIndex = 0;
+    }
+}
+
+std::vector<ChunkBlock>::iterator Chunk::blockInner(const glm::vec3 &searchPosition) {
+    //ako je blok out of bounds, vrati air blok, to znaci da se lice nece renderati
+    bool containedInX = searchPosition.x >= position.x && searchPosition.x < position.x + dimensions.x;
+    bool containedInY = searchPosition.y >= position.y && searchPosition.y < position.y + dimensions.y;
+    bool containedInZ = searchPosition.z >= position.z && searchPosition.z < position.z + dimensions.z;
+    if(!containedInX || !containedInY || !containedInZ) {
+        return blocks.end();
+    }
+    auto xOffset = position.x;
+    auto yOffsetFromZero = position.y;
+    auto zOffsetFromZero = position.z;
+    return blocks.begin() + ((searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero)));
 }

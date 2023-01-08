@@ -17,50 +17,53 @@ std::vector<Chunk> ChunkGenerator::generate() {
         i++;
     }
     for(auto& chunk : chunks) {
-        const auto& chunkPosition = chunk.getPosition();
-        chunkDirections.update(chunkPosition.x, chunkPosition.y, chunkPosition.z);
-        for(int y = chunkPosition.y; y < chunkPosition.y + dimensions.y; y += 1) {
-            for(int x = chunkPosition.x; x < chunkPosition.x + dimensions.x; x += 1) {
-                for(int z = chunkPosition.z; z < chunkPosition.z + dimensions.z; z += 1) {
-                    glm::vec3 position = glm::vec3(x,y,z);
-                    const auto& block = chunk.block(position);
-                    if(block.getData().blockType == ChunkBlockType::Air) {
-                        continue;
-                    }
+        generateChunk(chunk, chunkMap);
+    }
+    return chunks;
+}
 
-                    //else, check of you should render specific faces
-                    blockDirections.update(x,y,z);
-                    //std::cout << directions.top.x << " " << directions.top.y << " " << directions.top.z << std::endl;
-                    addFace(
-                            chunk, block, Face::backFace, position,
-                            blockDirections.back, chunkDirections.back, chunkMap
-                    );
-                    addFace(
-                            chunk, block, Face::frontFace, position,
-                            blockDirections.front,chunkDirections.front, chunkMap
-                    );
-                    addFace(
-                            chunk, block, Face::leftFace, position,
-                            blockDirections.left,chunkDirections.left, chunkMap
-                    );
-                    addFace(
-                            chunk, block, Face::rightFace, position,
-                            blockDirections.right,chunkDirections.right, chunkMap
-                    );
-                    addFace(
-                            chunk, block, Face::bottomFace, position,
-                            blockDirections.bottom,chunkDirections.bottom, chunkMap
-                    );
-                    addFace(
-                            chunk, block, Face::topFace, position,
-                            blockDirections.top,chunkDirections.top, chunkMap
-                    );
+void ChunkGenerator::generateChunk(Chunk &chunk, const ChunkMap& chunkMap) {
+    const auto& chunkPosition = chunk.getPosition();
+    chunkDirections.update(chunkPosition.x, chunkPosition.y, chunkPosition.z);
+    for(int y = chunkPosition.y; y < chunkPosition.y + dimensions.y; y += 1) {
+        for(int x = chunkPosition.x; x < chunkPosition.x + dimensions.x; x += 1) {
+            for(int z = chunkPosition.z; z < chunkPosition.z + dimensions.z; z += 1) {
+                glm::vec3 position = glm::vec3(x,y,z);
+                const auto& block = chunk.block(position);
+                if(block.getData().blockType == ChunkBlockType::Air) {
+                    //std::cout << "Skipping air block" << std::endl;
+                    continue;
                 }
+
+                //else, check of you should render specific faces
+                blockDirections.update(x,y,z);
+                addFace(
+                        chunk, block, Face::backFace, position,
+                        blockDirections.back, chunkDirections.back, chunkMap
+                );
+                addFace(
+                        chunk, block, Face::frontFace, position,
+                        blockDirections.front,chunkDirections.front, chunkMap
+                );
+                addFace(
+                        chunk, block, Face::leftFace, position,
+                        blockDirections.left,chunkDirections.left, chunkMap
+                );
+                addFace(
+                        chunk, block, Face::rightFace, position,
+                        blockDirections.right,chunkDirections.right, chunkMap
+                );
+                addFace(
+                        chunk, block, Face::bottomFace, position,
+                        blockDirections.bottom,chunkDirections.bottom, chunkMap
+                );
+                addFace(
+                        chunk, block, Face::topFace, position,
+                        blockDirections.top,chunkDirections.top, chunkMap
+                );
             }
         }
     }
-    //std::cout << "Finished chunk generation" << std::endl;
-    return chunks;
 }
 
 void ChunkGenerator::addFace(
@@ -74,12 +77,12 @@ void ChunkGenerator::addFace(
 ) {
 
     if(shouldGenerateFace(chunk, adjBlockPos, adjChunkPosition, chunkMap)) {
+        //std::cout << "Add face" << std::endl;
         std::vector<GLfloat> texCoords;
         fillTextureCoords(block, texCoords, face);
 
         chunk.addFace(face, position, texCoords);
         no_faces++;
-        return;
     }
 }
 
@@ -183,4 +186,31 @@ bool ChunkGenerator::shouldGenerateFace(
 
 int ChunkGenerator::getNumberOfFaces() {
     return no_faces;
+}
+
+void ChunkGenerator::regenerate(std::vector<Chunk>& chunks, std::vector<Chunk*> chunksToRegenerate) {
+    no_faces = 0;
+    if(chunks.empty()) return;
+    dimensions = chunks.begin()->getDimensions();
+    ChunkMap chunkMap = generateChunkMap(chunks);
+    for(auto& chunk : chunks) {
+        if(std::find(chunksToRegenerate.begin(), chunksToRegenerate.end(), &chunk) != chunksToRegenerate.end()) {
+            //std::cout << "Regenerating chunk" << std::endl;
+            generateChunk(chunk, chunkMap);
+            chunk.updateGraphicsData();
+        }
+    }
+    //std::cout << no_faces << std::endl;
+}
+
+ChunkMap ChunkGenerator::generateChunkMap(std::vector<Chunk> &chunks) {
+    ChunkMap chunkMap;
+    for(auto& chunk : chunks) {
+        std::string key =
+                std::to_string(static_cast<int>(chunk.getPosition().x)) + " "
+                + std::to_string(static_cast<int>(chunk.getPosition().y)) + " "
+                + std::to_string(static_cast<int>(chunk.getPosition().z));
+        chunkMap.insert({key, &chunk});
+    }
+    return chunkMap;
 }

@@ -5,7 +5,8 @@ Application::Application(unsigned int w, unsigned int h, const std::string &name
     : context(Context(camera, w, h, name)), renderer(
         "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/shaders/texturedVertexShader.vert",
         "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/shaders/texturedFragmentShader.frag",
-        {"/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/grass_simple.jpg"}
+        {"/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/grass_simple.jpg"},
+        &context.state.world
     ) {}
 
 void Application::runLoop() {
@@ -15,7 +16,7 @@ void Application::runLoop() {
         context.adjustDeltaTime();
         context.handleKeyboardInput(context.window); //kontinuriani input
 
-        renderer.render(context.window, context.camera);
+        renderer.render(context.window, context.state.player.getCamera());
     }
     renderer.clearData();
     glfwTerminate();
