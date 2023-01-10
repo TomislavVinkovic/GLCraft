@@ -10,7 +10,7 @@ Chunk::Chunk(const glm::vec3 &dimensions, const glm::vec3& position) : dimension
                         static_cast<float>(i), //x
                         static_cast<float>(k), //y
                         static_cast<float>(j) //z
-                ), block_type::GrassBlock));
+                ), block_type::WaterBlock));
             }
         }
     }
@@ -40,14 +40,12 @@ ChunkBlock Chunk::block(const glm::vec3 &searchPosition, bool logInfo) const {
 //    if(logInfo) {
 //        std::cout << "block found" << std::endl;
 //    }
-    auto xOffset = position.x;
-    auto yOffsetFromZero = position.y;
-    auto zOffsetFromZero = position.z;
-    ChunkBlock block = blocks[(searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero))];
-//    if(block.getData().blockType != block_type::AirBlock.blockType && logInfo) {
-//        std::cout << "Not air" << std::endl;
-//    }
-    return blocks[(searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero))];
+    int relX = static_cast<int>(floor(searchPosition.x)) & (static_cast<int>(dimensions.x)-1);
+    int relY = static_cast<int>(floor(searchPosition.y)) & (static_cast<int>(dimensions.y)-1);
+    int relZ = static_cast<int>(floor(searchPosition.z)) & (static_cast<int>(dimensions.z)-1);
+
+    int offset = relX + dimensions.x * (relY + dimensions.y * relZ);
+    return blocks[offset];
 }
 
 
@@ -58,9 +56,9 @@ void Chunk::addFace(
         const std::vector<GLfloat>& textureCoords
 ) {
     for(int i = 0, j = 0, k=0; i < 4; i++) {
-        vertices.push_back(face[j++] + this->position.x + blockPosition.x);
-        vertices.push_back(face[j++] + this->position.y + blockPosition.y);
-        vertices.push_back(face[j++] + this->position.z + blockPosition.z);
+        vertices.push_back(face[j++] + blockPosition.x);
+        vertices.push_back(face[j++] + blockPosition.y);
+        vertices.push_back(face[j++] + blockPosition.z);
 
         j += 2; //skip the old texture coordinates
 
@@ -165,7 +163,6 @@ unsigned int Chunk::getEBO() const{
 }
 
 void Chunk::updateGraphicsData() {
-    //TODO: IMPLEMENT EXCEPTION HANDLING
     bindVAO();
     bindVBO();
     glBufferData(
@@ -209,10 +206,19 @@ const std::vector<GLfloat> &Chunk::getVertices() const {
     return vertices;
 }
 
-void Chunk::editBlock(const glm::vec3 &searchPosition, const ChunkBlockData& blockData) {
+
+///This function has 2 primary tasks
+///The first task is to edit whichever block is passed to the function
+///The other task is to check whether or not that block is an edge block. If the given block is an edge block,
+///Push back the positions of all chunks that are surrounding the block to the vector of chunks passed by refference
+void Chunk::editBlock(
+        const glm::vec3 &searchPosition,
+        const ChunkBlockData& blockData,
+        std::vector<glm::vec3>& surroundingBlockPositions
+) {
     auto block = blockInner(searchPosition);
     if(block != blocks.end()) {
-        //std::cout << block->getPosition().x << " " << block->getPosition().y << " " << block->getPosition().z << " " << std::endl;
+        //checkEdgeBlock(block, surroundingBlockPositions);
         *block = ChunkBlock(block->getPosition(), blockData);
         vertices.clear();
         indices.clear();
@@ -228,8 +234,14 @@ std::vector<ChunkBlock>::iterator Chunk::blockInner(const glm::vec3 &searchPosit
     if(!containedInX || !containedInY || !containedInZ) {
         return blocks.end();
     }
-    auto xOffset = position.x;
-    auto yOffsetFromZero = position.y;
-    auto zOffsetFromZero = position.z;
-    return blocks.begin() + ((searchPosition.x - xOffset) + dimensions.x * ((searchPosition.y - yOffsetFromZero) + dimensions.y * (searchPosition.z - zOffsetFromZero)));
+    int relX = static_cast<int>(floor(searchPosition.x)) & (static_cast<int>(dimensions.x)-1);
+    int relY = static_cast<int>(floor(searchPosition.y)) & (static_cast<int>(dimensions.y)-1);
+    int relZ = static_cast<int>(floor(searchPosition.z)) & (static_cast<int>(dimensions.z)-1);
+
+    int offset = relX + dimensions.x * (relY + dimensions.y * relZ);
+    return blocks.begin() + offset;
+}
+
+void Chunk::checkEdgeBlock(std::vector<ChunkBlock>::iterator block, std::vector<glm::vec3> &surroundingBlockPositions) {
+    //TODO: IMPLEMENT THIS FUNCTION
 }

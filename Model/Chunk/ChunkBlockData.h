@@ -56,6 +56,50 @@ namespace block_type {
         {32,256},{16,240},
         {32,256},{16,240},{32,256}
     );
-    //have to add other blocks too
+    const ChunkBlockData SandBlock = ChunkBlockData(
+            ChunkBlockType::Sand, "Sand",
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            {112,240}, {128,256}
+    );
+    const ChunkBlockData DirtBlock = ChunkBlockData(
+            ChunkBlockType::Dirt, "Dirt",
+            {32,240}, {48,256},
+            {32,240}, {48,256},
+            {32,240}, {48,256},
+            {32,240}, {48,256},
+            {32,240}, {48,256},
+            {32,240}, {48,256}
+    );
+    const ChunkBlockData CobblestoneBlock = ChunkBlockData(
+            ChunkBlockType::Cobblestone, "Cobblestone",
+            {48,240}, {64,256},
+            {48,240}, {64,256},
+            {48,240}, {64,256},
+            {48,240}, {64,256},
+            {48,240}, {64,256},
+            {48,240}, {64,256}
+    );
+    const ChunkBlockData WoodBlock = ChunkBlockData(
+            ChunkBlockType::Wood, "Wood",
+            {80,240}, {96,256},
+            {80,240}, {96,256},
+            {64,240}, {80,256},
+            {64,240}, {80,256},
+            {64,240}, {80,256},
+            {64,240}, {80,256}
+    );
+    const ChunkBlockData WaterBlock = ChunkBlockData(
+            ChunkBlockType::Water, "Water",
+            {128,240}, {144,256},
+            {128,240}, {144,256},
+            {128,240}, {144,256},
+            {128,240}, {144,256},
+            {128,240}, {144,256},
+            {128,240}, {144,256}
+    );
 
 };

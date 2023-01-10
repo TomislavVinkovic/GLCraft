@@ -22,6 +22,7 @@ void Renderer::render(GLFWwindow *window, Camera &camera) {
     //cubeRenderer.render(camera);
     chunkRenderer.render(camera);
     glDisable(GL_DEPTH_TEST);
+    //tu negdje ce ici skyboxRenderer.render()...
     uiRenderer.render();
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);

@@ -7,11 +7,13 @@
 #include "Cube/CubeRenderer.h"
 #include "Chunk/ChunkRenderer.h"
 #include "UIRenderer/UIRenderer.h"
+#include "Skybox/SkyboxRenderer.h"
 
 class Renderer {
     private:
         World* world;
         glm::vec4 clearColor;
+        SkyboxRenderer skyboxRenderer;
         UIRenderer uiRenderer;
         CubeRenderer cubeRenderer;
         ChunkRenderer chunkRenderer;
@@ -21,11 +23,20 @@ class Renderer {
             unsigned int scr_height,
             const std::string& cubeVertexPath,
             const std::string& cubeFragmentPath,
+            const std::string& skyboxVertexPath,
+            const std::string& skyboxFragmentPath,
             const std::vector<std::string>& cubeTextures,
             World* world,
             glm::vec4 clearColor = glm::vec4(0.f, 0.77f, 1.f, 1.0f)
         ) : cubeRenderer(CubeRenderer(cubeVertexPath, cubeFragmentPath, cubeTextures)),
-            chunkRenderer(world), uiRenderer(scr_width, scr_height){
+            chunkRenderer(world), uiRenderer(scr_width, scr_height),
+            skyboxRenderer(
+                    cubeVertexPath,
+                    cubeFragmentPath,
+                    "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/skybox_top.png",
+                    "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/skybox_bottom.png",
+                    "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/skybox_middle.png"
+            ){
             this->world = world;
             this->clearColor = clearColor;
         }

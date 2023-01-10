@@ -2,7 +2,7 @@
 
 BasicTexture::BasicTexture(const std::string &filePath, GLenum format) {
     glGenTextures(1, &ID);
-    glBindTexture(GL_TEXTURE_2D, ID);
+    bindTexture();
     this->format = format;
 
     setTextureParameters();
@@ -14,7 +14,7 @@ BasicTexture::~BasicTexture() {
 }
 
 void BasicTexture::changeTexture(const std::string &filePath) {
-    glBindTexture(GL_TEXTURE_2D, ID);
+    bindTexture();
     loadAndApplyTextureImage(filePath);
 }
 
@@ -47,7 +47,7 @@ void BasicTexture::loadAndApplyTextureImage(const std::string &filePath) {
 }
 
 BasicTexture BasicTexture::operator=(const BasicTexture &texture) {
-    if(ID != 0) glDeleteTextures(1, &ID);
+    if(texture.ID != 0) glDeleteTextures(1, &ID);
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
     format = texture.format;

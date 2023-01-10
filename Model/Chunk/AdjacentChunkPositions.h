@@ -5,12 +5,12 @@
 struct AdjacentChunkPositions{
     void update(int x, int y, int z)
     {
-        top      =   {x,     y + 8,  z};
-        bottom    =   {x,     y - 8,  z};
-        left    =   {x - 8, y,      z};
-        right   =   {x + 8, y,      z};
-        front   =   {x,     y,      z + 8};
-        back    =   {x,     y,      z - 8};
+        top      =   {x,     y + 16,  z};
+        bottom    =   {x,     y - 16,  z};
+        left    =   {x - 16, y,      z};
+        right   =   {x + 16, y,      z};
+        front   =   {x,     y,      z + 16};
+        back    =   {x,     y,      z - 16};
     }
     glm::vec3 top;
     glm::vec3 bottom;

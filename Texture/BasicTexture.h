@@ -7,9 +7,9 @@
 #include "TextureAbstract.h"
 
 class BasicTexture : public TextureAbstract {
-    private:
-        void setTextureParameters() override;
-        void loadAndApplyTextureImage(const std::string &filePath) override;
+    protected:
+        virtual void setTextureParameters() override;
+        virtual void loadAndApplyTextureImage(const std::string &filePath) override;
 
 
     public:
@@ -17,8 +17,8 @@ class BasicTexture : public TextureAbstract {
         BasicTexture(const std::string& filePath, GLenum format = GL_RGB);
         ~BasicTexture();
 
-        void changeTexture(const std::string &filePath) override;
-        void bindTexture() const override;
+        virtual void changeTexture(const std::string &filePath) override;
+        virtual void bindTexture() const override;
 
         //operators
         BasicTexture operator=(const BasicTexture& texture);

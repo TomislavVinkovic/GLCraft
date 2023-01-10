@@ -8,6 +8,8 @@ enum class ChunkBlockType :  Block_t
     Air = 0,
     Grass,
     Dirt,
-    Stone,
-    Sand
+    Cobblestone,
+    Sand,
+    Wood,
+    Water
 };

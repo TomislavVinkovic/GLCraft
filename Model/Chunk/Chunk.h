@@ -56,7 +56,15 @@ class Chunk {
                 const glm::vec3& blockPosition,
                 const std::vector<GLfloat>& textureCoords
         );
-        void editBlock(const glm::vec3& position, const ChunkBlockData& blockData);
+        void editBlock(
+                const glm::vec3& position,
+                const ChunkBlockData& blockData,
+                std::vector<glm::vec3>& surroundingBlockPositions
+        );
+        void checkEdgeBlock(
+                std::vector<ChunkBlock>::iterator block,
+                std::vector<glm::vec3>& surroundingBlockPositions
+        );
 
         //Graphics data commands
         GLuint currentVIndex = 0; //TODO: make private
