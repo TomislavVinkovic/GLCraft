@@ -15,7 +15,8 @@ TextureAtlas::~TextureAtlas() {
 }
 
 TextureAtlas TextureAtlas::operator=(const TextureAtlas &texture) {
-    return TextureAtlas();
+    //TODO: implement this function
+    return *this;
 }
 
 void TextureAtlas::setTextureParameters() {
@@ -54,7 +55,7 @@ void TextureAtlas::loadAndApplyTextureImage(const std::string &filePath) {
     TEXTURE_PACK_SIZE = width;
     stbi_image_free(data);
     textureFilepath = filePath;
-    std::cout << "Texture loaded successfully" << std::endl;
+    //std::cout << "Texture loaded successfully" << std::endl;
 }
 
 void TextureAtlas::changeTexture(const std::string &filePath) {

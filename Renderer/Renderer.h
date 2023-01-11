@@ -13,10 +13,10 @@ class Renderer {
     private:
         World* world;
         glm::vec4 clearColor;
-        SkyboxRenderer skyboxRenderer;
         UIRenderer uiRenderer;
         CubeRenderer cubeRenderer;
         ChunkRenderer chunkRenderer;
+        SkyboxRenderer skyboxRenderer;
     public:
         Renderer(
             unsigned int scr_width,
@@ -31,8 +31,8 @@ class Renderer {
         ) : cubeRenderer(CubeRenderer(cubeVertexPath, cubeFragmentPath, cubeTextures)),
             chunkRenderer(world), uiRenderer(scr_width, scr_height),
             skyboxRenderer(
-                    cubeVertexPath,
-                    cubeFragmentPath,
+                    skyboxVertexPath,
+                    skyboxFragmentPath,
                     "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/skybox_top.png",
                     "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/skybox_bottom.png",
                     "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/skybox_middle.png"

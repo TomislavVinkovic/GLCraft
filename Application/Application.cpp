@@ -6,6 +6,8 @@ Application::Application(unsigned int w, unsigned int h, const std::string &name
         w, h,
         "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/shaders/texturedVertexShader.vert",
         "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/shaders/texturedFragmentShader.frag",
+        "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/shaders/skyboxVertexShader.vert",
+        "/home/tomislav/Desktop/faks/Projekt3D/GLCraft/shaders/skyboxFragmentShader.frag",
         {"/home/tomislav/Desktop/faks/Projekt3D/GLCraft/textures/grass_simple.jpg"},
         &context.state.world
     ) {}

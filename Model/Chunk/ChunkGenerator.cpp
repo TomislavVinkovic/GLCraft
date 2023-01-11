@@ -196,6 +196,7 @@ void ChunkGenerator::regenerate(std::vector<Chunk>& chunks, std::vector<Chunk*> 
     for(auto& chunk : chunks) {
         if(std::find(chunksToRegenerate.begin(), chunksToRegenerate.end(), &chunk) != chunksToRegenerate.end()) {
             //std::cout << "Regenerating chunk" << std::endl;
+            chunk.clearData();
             generateChunk(chunk, chunkMap);
             chunk.updateGraphicsData();
         }

@@ -1,9 +1,5 @@
 #include "Renderer.h"
 
-//void Renderer::drawCube(const glm::vec3 &pos) {
-//    cubeRenderer.add(pos);
-//}
-
 void Renderer::setCubeRenderer(const CubeRenderer &cubeRenderer) {
     this->cubeRenderer = cubeRenderer;
 }
@@ -14,12 +10,12 @@ void Renderer::setChunkRenderer(const ChunkRenderer &chunkRenderer) {
 
 void Renderer::render(GLFWwindow *window, Camera &camera) {
     //std::cout << "Filled with fill color" << std::endl;
-    glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
+    //glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //std::cout << "Entering cube renderer" << std::endl;
+    skyboxRenderer.render(camera);
     glEnable(GL_CULL_FACE);
-    //cubeRenderer.render(camera);
     chunkRenderer.render(camera);
     glDisable(GL_DEPTH_TEST);
     //tu negdje ce ici skyboxRenderer.render()...
@@ -27,7 +23,6 @@ void Renderer::render(GLFWwindow *window, Camera &camera) {
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-    //std::cout << "swapping buffers" << std::endl;
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
@@ -36,4 +31,5 @@ void Renderer::clearData() {
     uiRenderer.deleteGraphicsData();
     cubeRenderer.deleteData();
     chunkRenderer.deleteData();
+    skyboxRenderer.deleteData();
 }

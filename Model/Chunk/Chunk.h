@@ -10,6 +10,7 @@
 
 #include "ChunkBlock.h"
 #include "ChunkBlockType.h"
+#include "AdjacentChunkPositions.h"
 
 class Chunk {
     private:
@@ -49,6 +50,7 @@ class Chunk {
         const glm::vec3& getPosition() const;
         const std::vector<GLuint>& getIndices() const;
         const std::vector<GLfloat>& getVertices() const;
+        void clearData();
 
         //setters
         void addFace(
@@ -62,7 +64,7 @@ class Chunk {
                 std::vector<glm::vec3>& surroundingBlockPositions
         );
         void checkEdgeBlock(
-                std::vector<ChunkBlock>::iterator block,
+                const glm::vec3& searchPosition,
                 std::vector<glm::vec3>& surroundingBlockPositions
         );
 

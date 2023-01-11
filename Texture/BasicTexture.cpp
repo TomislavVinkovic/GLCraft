@@ -43,7 +43,7 @@ void BasicTexture::loadAndApplyTextureImage(const std::string &filePath) {
     }
     stbi_image_free(data);
     textureFilepath = filePath;
-    std::cout << "Texture loaded successfully" << std::endl;
+    //std::cout << "Texture loaded successfully" << std::endl;
 }
 
 BasicTexture BasicTexture::operator=(const BasicTexture &texture) {

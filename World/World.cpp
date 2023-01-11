@@ -63,7 +63,7 @@ World::~World() {
 }
 
 const Chunk* World::getChunk(const glm::vec3 &searchPosition) const {
-    //promisliti o offsetima kod dohvacanja blokovaaw
+    //promisliti o offsetima kod dohvacanja blokova
     int x = searchPosition.x;
     int z = searchPosition.z;
 
@@ -83,14 +83,6 @@ const Chunk* World::getChunk(const glm::vec3 &searchPosition) const {
         if(containedInX && containedInY && containedInZ) return &chunk;
     }
     return nullptr;
-
-
-//    if(idx_z * 10 + idx_x > chunks.size()-1 || idx_z * 10 + idx_x < 0){
-//        std::cout << "Out of bounds" << " " << (idx_z * 10 + idx_x ) << std::endl;
-//        return nullptr;
-//    }
-//
-//    return &chunks[idx_z * 10 + idx_x];
 }
 
 ChunkBlock World::getBlock(const glm::vec3 &position) const {
@@ -119,7 +111,9 @@ void World::editBlock(const glm::vec3 &position, const ChunkBlockData& blockData
         //std::cout << "Breaking block at " << position.x << " " << position.y << " " << position.z << std::endl;
         std::vector<Chunk*> chunksToRegenerate;
         chunksToRegenerate.push_back(chunk);
-
+        for(const auto& pos : surroundingChunkPositions) {
+            chunksToRegenerate.push_back(getChunkWorld(pos));
+        }
         ChunkGenerator generator;
         generator.regenerate(chunks, chunksToRegenerate);
     }

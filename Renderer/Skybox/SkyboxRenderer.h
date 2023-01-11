@@ -2,14 +2,19 @@
 
 #include <vector>
 #include <string>
-#include "SkyboxTexture.h"
+#include <array>
+
+#include "CubeMap.h"
 #include "Shader.hpp"
+#include "Camera.h"
 
 class SkyboxRenderer {
     private:
         unsigned int VAO = 0;
         unsigned int VBO = 0;
         unsigned int EBO = 0;
+
+        unsigned int no_indices = 0;
 
         void genVAO();
         void genVBO();
@@ -23,9 +28,7 @@ class SkyboxRenderer {
         void unbindVBO();
         void unbindEBO();
 
-        SkyboxTexture bottomTexture;
-        SkyboxTexture topTexture;
-        SkyboxTexture middleTexture;
+        CubeMap cubemap;
         Shader shader;
 
     public:
@@ -44,6 +47,6 @@ class SkyboxRenderer {
         ~SkyboxRenderer();
 
         void deleteData();
-        void render();
+        void render(const Camera& camera);
 
 };

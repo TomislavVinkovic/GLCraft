@@ -10,7 +10,7 @@ Chunk::Chunk(const glm::vec3 &dimensions, const glm::vec3& position) : dimension
                         static_cast<float>(i), //x
                         static_cast<float>(k), //y
                         static_cast<float>(j) //z
-                ), block_type::WaterBlock));
+                ), block_type::GrassBlock));
             }
         }
     }
@@ -214,15 +214,12 @@ const std::vector<GLfloat> &Chunk::getVertices() const {
 void Chunk::editBlock(
         const glm::vec3 &searchPosition,
         const ChunkBlockData& blockData,
-        std::vector<glm::vec3>& surroundingBlockPositions
+        std::vector<glm::vec3>& surroundingChunkPositions
 ) {
     auto block = blockInner(searchPosition);
     if(block != blocks.end()) {
-        //checkEdgeBlock(block, surroundingBlockPositions);
-        *block = ChunkBlock(block->getPosition(), blockData);
-        vertices.clear();
-        indices.clear();
-        currentVIndex = 0;
+        checkEdgeBlock(searchPosition, surroundingChunkPositions);
+        *block = ChunkBlock(searchPosition, blockData);
     }
 }
 
@@ -242,6 +239,32 @@ std::vector<ChunkBlock>::iterator Chunk::blockInner(const glm::vec3 &searchPosit
     return blocks.begin() + offset;
 }
 
-void Chunk::checkEdgeBlock(std::vector<ChunkBlock>::iterator block, std::vector<glm::vec3> &surroundingBlockPositions) {
-    //TODO: IMPLEMENT THIS FUNCTION
+void Chunk::checkEdgeBlock(const glm::vec3& searchPosition, std::vector<glm::vec3> &surroundingChunkPositions) {
+    AdjacentChunkPositions adjacentChunkPositions;
+    adjacentChunkPositions.update(position.x, position.y, position.z);
+    if(searchPosition.x == position.x) {
+        surroundingChunkPositions.push_back({position.x-16, position.y, position.z});
+    }
+    if(searchPosition.x == position.x + (dimensions.x - 1)) {
+        surroundingChunkPositions.push_back({position.x+16, position.y, position.z});
+    }
+    if(searchPosition.y == position.y) {
+        surroundingChunkPositions.push_back({position.x, position.y-16, position.z});
+    }
+    if(searchPosition.y == position.y + (dimensions.y - 1)) {
+        surroundingChunkPositions.push_back({position.x, position.y+16, position.z});
+    }
+    //jos provjeriti za ovo kod back i front za z
+    if(searchPosition.z == position.z) {
+        surroundingChunkPositions.push_back({position.x, position.y, position.z-16});
+    }
+    if(searchPosition.z == position.z + (dimensions.z - 1)) {
+        surroundingChunkPositions.push_back({position.x, position.y, position.z+16});
+    }
+}
+
+void Chunk::clearData() {
+    vertices.clear();
+    indices.clear();
+    currentVIndex = 0;
 }

@@ -21,7 +21,6 @@ ChunkRenderer::ChunkRenderer(
         float positionX = 0.f;
 
         std::vector<glm::vec3> chunkPositions;
-
         world->generate();
     }
 

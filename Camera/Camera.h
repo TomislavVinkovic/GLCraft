@@ -25,7 +25,7 @@ struct Camera {
     float Zoom = 45.f;
 
     Camera(unsigned int scr_width, unsigned int scr_height)
-        : Camera(45.f, scr_width, scr_height, 0.1f, 100.f){}
+        : Camera(45.f, scr_width, scr_height, 0.1f, 1000.f){}
 
     Camera(
       float FOV, unsigned int scr_width, unsigned int scr_height, float zNear, float zFar,
