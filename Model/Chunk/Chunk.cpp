@@ -2,16 +2,16 @@
 
 //TODO: Add random chunk generation
 Chunk::Chunk(const glm::vec3 &dimensions, const glm::vec3& position) : dimensions(dimensions), position(position) {
-
-    for(int k = position.y; k < position.y + dimensions.y; k += 1) {
-        for(int i = position.x; i < position.x + dimensions.x; i += 1) {
-            for(int j = position.z; j < position.z + dimensions.z; j += 1) {
-                blocks.push_back(ChunkBlock(glm::vec3(
-                        static_cast<float>(i), //x
-                        static_cast<float>(k), //y
-                        static_cast<float>(j) //z
-                ), block_type::GrassBlock));
-            }
+      //this will all be air blocks
+      for(int k = position.y; k < position.y + dimensions.y; k += 1) {
+            for(int i = position.x; i < position.x + dimensions.x; i += 1) {
+                for(int j = position.z; j < position.z + dimensions.z; j += 1) {
+                    blocks.push_back(ChunkBlock({
+                            static_cast<int>(i),
+                            static_cast<int>(k),
+                            static_cast<int>(j)
+                    }, &block_type::AirBlock));
+                }
         }
     }
 }
@@ -35,7 +35,7 @@ ChunkBlock Chunk::block(const glm::vec3 &searchPosition, bool logInfo) const {
     if(
         !containedInX || !containedInY || !containedInZ
     ) {
-        return ChunkBlock(searchPosition, block_type::AirBlock);
+        return ChunkBlock(searchPosition, &block_type::AirBlock);
     }
 //    if(logInfo) {
 //        std::cout << "block found" << std::endl;
@@ -60,7 +60,8 @@ void Chunk::addFace(
         vertices.push_back(face[j++] + blockPosition.y);
         vertices.push_back(face[j++] + blockPosition.z);
 
-        j += 2; //skip the old texture coordinates
+        //no longer necessary since they are removed
+        //j += 2; //skip the old texture coordinates
 
         //pushing back texture coordinates
         //both coordinates are normalized between 0 and 1
@@ -81,7 +82,6 @@ void Chunk::addFace(
         currentVIndex
     });
     currentVIndex += 4;
-    //std::cout << vertices.size() << std::endl;
 }
 
 const glm::vec3 &Chunk::getPosition() const{
@@ -118,6 +118,9 @@ void Chunk::generateGraphicsData() {
             GL_STATIC_DRAW
     );
     //TU SAM STAO
+
+    //test ovoga
+    //clearData();
 }
 
 void Chunk::deleteGraphicsData() {
@@ -179,7 +182,8 @@ void Chunk::updateGraphicsData() {
             indices.data(),
             GL_STATIC_DRAW
     );
-    //std::cout << "Graphics data updated" << std::endl;
+    //test ovoga
+    //clearData();
 }
 
 const std::vector<GLuint> &Chunk::getIndices() const {
@@ -213,7 +217,7 @@ const std::vector<GLfloat> &Chunk::getVertices() const {
 ///Push back the positions of all chunks that are surrounding the block to the vector of chunks passed by refference
 void Chunk::editBlock(
         const glm::vec3 &searchPosition,
-        const ChunkBlockData& blockData,
+        const ChunkBlockData* blockData,
         std::vector<glm::vec3>& surroundingChunkPositions
 ) {
     auto block = blockInner(searchPosition);
@@ -267,4 +271,22 @@ void Chunk::clearData() {
     vertices.clear();
     indices.clear();
     currentVIndex = 0;
+}
+
+void Chunk::placeBlock(const glm::vec3 &pos, const ChunkBlockData* blockData) {
+    //checking boundaries for now
+    bool containedInX = pos.x >= position.x && pos.x < position.x + dimensions.x;
+    bool containedInY = pos.y >= position.y && pos.y < position.y + dimensions.y;
+    bool containedInZ = pos.z >= position.z && pos.z < position.z + dimensions.z;
+    //do not place the block if it is out of bounds
+    if(!containedInX || !containedInY || !containedInZ) return;
+
+    int relX = static_cast<int>(floor(pos.x)) & (static_cast<int>(dimensions.x)-1);
+    int relY = static_cast<int>(floor(pos.y)) & (static_cast<int>(dimensions.y)-1);
+    int relZ = static_cast<int>(floor(pos.z)) & (static_cast<int>(dimensions.z)-1);
+
+    int offset = relX + dimensions.x * (relY + dimensions.y * relZ);
+
+    //TODO: implement setters to solve copying
+    blocks[offset] = ChunkBlock(pos, blockData);
 }

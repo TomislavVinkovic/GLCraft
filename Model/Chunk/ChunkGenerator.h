@@ -1,10 +1,13 @@
 #pragma once
 
 #include "glm.hpp"
+#include "gtc/noise.hpp"
 #include "glad/glad.h"
 #include<GLFW/glfw3.h>
+
 #include <iostream>
 #include <algorithm>
+#include <array>
 
 #include "Chunk.h"
 #include "ChunkBlock.h"
@@ -12,6 +15,7 @@
 
 #include "AdjacentBlockPositions.h"
 #include "AdjacentChunkPositions.h"
+#include "NoiseGenerator.h"
 
 #include <unordered_map>
 #include<string>
@@ -29,8 +33,21 @@ class ChunkGenerator{
         int getNumberOfFaces();
 
     private:
+        //remember that this is fixed for now
+        static const int chunkDimensions = 16*16*16;
+        static const int chunkSize = 16;
+        static const int heightMapSize = chunkSize*chunkSize;
 
-        void generateChunk(Chunk& chunk, const ChunkMap& chunkMap);
+        NoiseGenerator noiseGenerator{27891};
+
+        //height map generation
+        std::array<int, heightMapSize> createChunkHeightMap(Chunk& chunk);
+        void generateSmoothTerrain(Chunk& chunk, const std::array<int, heightMapSize>& heightMap);
+
+        void generateChunk(
+                Chunk& chunk,
+                const ChunkMap& chunkMap
+        );
         ChunkMap generateChunkMap(std::vector<Chunk>& chunks);
         glm::vec3 dimensions;
         std::vector<glm::vec3> chunkPositions;

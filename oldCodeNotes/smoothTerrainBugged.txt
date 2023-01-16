@@ -1,0 +1,24 @@
+void ChunkGenerator::generateSmoothTerrain(Chunk &chunk, const std::array<int, ChunkGenerator::heightMapSize> &heightMap) {
+    const auto& chunkPosition = chunk.getPosition();
+    //I need to pass this empty vector to edit block
+    for(const auto& block : chunk.getBlocks()) {
+
+        const auto& blockPosition = block.getPosition();
+        int x = static_cast<int>(blockPosition.x);
+        int z = static_cast<int>(blockPosition.z);
+
+        int height = heightMap[z%(chunkSize-1) * chunkSize + x%(chunkSize-1)];
+        if(blockPosition.y > height) {
+            continue;
+        }
+        else if(blockPosition.y == height) {
+            chunk.placeBlock({blockPosition.x,blockPosition.y,blockPosition.z}, block_type::GrassBlock);
+        }
+        else if(blockPosition.y > height - 4) {
+            chunk.placeBlock({blockPosition.x,blockPosition.y,blockPosition.z}, block_type::DirtBlock);
+        }
+        else if(blockPosition.y <= height-4) {
+            chunk.placeBlock({blockPosition.x,blockPosition.y,blockPosition.z}, block_type::CobblestoneBlock);
+        }
+    }
+}

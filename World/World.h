@@ -8,7 +8,8 @@
 #include "Camera.h"
 #include "Ray.h"
 
-#include "algorithm"
+#include <algorithm>
+#include <array>
 
 #include "glm.hpp"
 
@@ -24,7 +25,7 @@ class World {
         ~World();
         const std::vector<Chunk>& getChunks() const;
         void generate();
-        void regenerate();
+        //void regenerate();
         void deleteData();
 
         const Chunk* getChunk(const glm::vec3& position) const;

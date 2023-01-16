@@ -6,7 +6,7 @@
 
 struct Camera {
 
-    glm::vec3 Position = glm::vec3(16.f, 20.f, 32.f);
+    glm::vec3 Position = glm::vec3(16.f, 16.f, 32.f);
     glm::vec3 Front = glm::vec3(0.f, 0.f, -1.f);
     glm::vec3 Up;
     glm::vec3 Right;
@@ -29,7 +29,7 @@ struct Camera {
 
     Camera(
       float FOV, unsigned int scr_width, unsigned int scr_height, float zNear, float zFar,
-      const glm::vec3& position = glm::vec3(16.f, 20.f, 32.f),
+      const glm::vec3& position = glm::vec3(16.f, 140.f, -10.f),
       const glm::vec3& up = glm::vec3(0.f, 1.f, 0.f)
     ) : Position(position), WorldUp(up) {
         Zoom = FOV;

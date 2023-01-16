@@ -58,9 +58,13 @@ class Chunk {
                 const glm::vec3& blockPosition,
                 const std::vector<GLfloat>& textureCoords
         );
+        void placeBlock(
+            const glm::vec3& pos,
+            const ChunkBlockData* blockData
+        );
         void editBlock(
                 const glm::vec3& position,
-                const ChunkBlockData& blockData,
+                const ChunkBlockData* blockData,
                 std::vector<glm::vec3>& surroundingBlockPositions
         );
         void checkEdgeBlock(

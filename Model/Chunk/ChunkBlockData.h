@@ -6,7 +6,8 @@
 
 struct ChunkBlockData {
 
-    ChunkBlockData(ChunkBlockType type, const std::string& name) : name(name), blockType(type){}
+    ChunkBlockData(ChunkBlockType type, const std::string& name, bool breakable = true)
+        : name(name), blockType(type), breakable(breakable){}
     ChunkBlockData(
             ChunkBlockType type,
             const std::string& name,
@@ -21,13 +22,14 @@ struct ChunkBlockData {
             const glm::vec2& frontFaceTextureMin,
             const glm::vec2& frontFaceTextureMax,
             const glm::vec2& backFaceTextureMin,
-            const glm::vec2& backFaceTextureMax
+            const glm::vec2& backFaceTextureMax,
+            bool breakable = true
     ) : blockType(type), name(name), topFaceTextureMax(topFaceTextureMax), topFaceTextureMin(topFaceTextureMin),
     bottomFaceTextureMax(bottomFaceTextureMax), bottomFaceTextureMin(bottomFaceTextureMin),
     leftFaceTextureMax(leftFaceTextureMax), leftFaceTextureMin(leftFaceTextureMin),
     rightFaceTextureMax(rightFaceTextureMax), rightFaceTextureMin(rightFaceTextureMin),
     frontFaceTextureMax(frontFaceTextureMax), frontFaceTextureMin(frontFaceTextureMin),
-    backFaceTextureMax(backFaceTextureMax), backFaceTextureMin(backFaceTextureMin){}
+    backFaceTextureMax(backFaceTextureMax), backFaceTextureMin(backFaceTextureMin), breakable(breakable){}
 
 
     ChunkBlockType blockType{ChunkBlockType::Air};
@@ -44,10 +46,11 @@ struct ChunkBlockData {
     glm::vec2 frontFaceTextureMax{-1,-1};
     glm::vec2 backFaceTextureMin{-1,-1};
     glm::vec2 backFaceTextureMax{-1,-1};
+    bool breakable = true;
 };
 
 namespace block_type {
-    const ChunkBlockData AirBlock= ChunkBlockData(ChunkBlockType::Air, "Air");
+    const ChunkBlockData AirBlock= ChunkBlockData(ChunkBlockType::Air, "Air", false);
 
     const ChunkBlockData GrassBlock = ChunkBlockData(
         ChunkBlockType::Grass, "Grass", {0,240}, {16, 256},
@@ -99,7 +102,8 @@ namespace block_type {
             {128,240}, {144,256},
             {128,240}, {144,256},
             {128,240}, {144,256},
-            {128,240}, {144,256}
+            {128,240}, {144,256},
+            false
     );
 
 };
