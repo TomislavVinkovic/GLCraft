@@ -5,8 +5,11 @@
 #include "ChunkBlockData.h"
 #include "Chunk.h"
 #include "ChunkGenerator.h"
+
+
 #include "Camera.h"
 #include "Ray.h"
+#include "Player.h"
 
 #include <algorithm>
 #include <array>
@@ -18,9 +21,11 @@
 
 class World {
     private:
+        Player* player;
         std::vector<Chunk> chunks;
         Chunk* getChunkWorld(const glm::vec3& position);
     public:
+        World(Player* player);
         World() = default;
         ~World();
         const std::vector<Chunk>& getChunks() const;
@@ -34,5 +39,7 @@ class World {
 
         //block editing
         void editBlock(const glm::vec3& position, const ChunkBlockData& blockData);
-        //void setBlock(const glm::vec3& position, ChunkBlockData blockData);
+
+        //setters
+        void setPlayer(Player* player);
 };

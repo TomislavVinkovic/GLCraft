@@ -59,6 +59,38 @@ void Context::handleKeyboardInterrupt(GLFWwindow *window, int key, int scancode,
         else if(*polygonMode == GL_FILL)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
+
+    //TOGGLE ZA INVENTORY SLOT
+    if(glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+        state.player.setSelectedSlot(0);
+    }
+    if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        state.player.setSelectedSlot(1);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        state.player.setSelectedSlot(2);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        state.player.setSelectedSlot(3);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+        state.player.setSelectedSlot(4);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+        state.player.setSelectedSlot(5);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
+        state.player.setSelectedSlot(6);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
+        state.player.setSelectedSlot(7);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS) {
+        state.player.setSelectedSlot(8);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS) {
+        state.player.setSelectedSlot(9);
+    }
 }
 
 void Context::handleMouseMovement(GLFWwindow *window, double xPos, double yPos) {

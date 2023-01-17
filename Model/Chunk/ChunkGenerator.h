@@ -38,6 +38,8 @@ class ChunkGenerator{
         static const int chunkSize = 16;
         static const int heightMapSize = chunkSize*chunkSize;
 
+        //27891 //najdrazi
+        //31245
         NoiseGenerator noiseGenerator{27891};
 
         //height map generation

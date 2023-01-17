@@ -17,5 +17,7 @@ class Player {
         const Inventory& getInventory();
         void addToInventory(const ChunkBlockData& block);
         //TODO: Maybe I will need to change this function definition
-        void removeFromInventory(const std::string& name);
+        void removeFromInventory(const ChunkBlockType& type);
+        void setSelectedSlot(unsigned int slot);
+        const ChunkBlockData* getCurrentBlock();
 };

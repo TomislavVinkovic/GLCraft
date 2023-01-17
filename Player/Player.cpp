@@ -14,6 +14,14 @@ void Player::addToInventory(const ChunkBlockData &block) {
     inventory.addBlock(block);
 }
 
-void Player::removeFromInventory(const std::string &name) {
-    inventory.removeBlock(name);
+void Player::removeFromInventory(const ChunkBlockType& type) {
+    inventory.removeBlock(type);
+}
+
+const ChunkBlockData *Player::getCurrentBlock() {
+    return inventory.getCurrentBlock();
+}
+
+void Player::setSelectedSlot(unsigned int slot) {
+    inventory.setSelectedSlot(slot);
 }

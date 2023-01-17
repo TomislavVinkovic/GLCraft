@@ -6,7 +6,7 @@ NoiseGenerator::NoiseGenerator(int seed)
         : m_seed(seed)
 {
     m_noiseParameters.octaves = 8;
-    m_noiseParameters.amplitude = 80;
+    m_noiseParameters.amplitude = 75;
     m_noiseParameters.smoothness = 350;
     m_noiseParameters.heightOffset = -5;
     m_noiseParameters.roughness = 0.53;

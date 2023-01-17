@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 using Block_t = uint8_t;
 
 enum class ChunkBlockType :  Block_t
