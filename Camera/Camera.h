@@ -20,7 +20,7 @@ struct Camera {
     float Pitch = 0.f;
 
     //options
-    float MovementSpeed = 20.f;
+    float MovementSpeed = 40.f;
     float MouseSensitivity = 0.1f;
     float Zoom = 45.f;
 

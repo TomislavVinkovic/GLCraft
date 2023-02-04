@@ -15,6 +15,7 @@ void ImGuiRenderer::render() {
         ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(20, 100));
+        ImGui::SetNextWindowSize(ImVec2(300, 400));
     }
 
     //Inventory window

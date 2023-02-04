@@ -18,16 +18,14 @@ void Renderer::render(GLFWwindow *window, Camera &camera) {
     ImGui_ImplGlfwGL3_NewFrame();
 
     //GRAPHICS RENDERING STARTS HERE...
-    //skyboxRenderer.render(camera);
-
     chunkRenderer.render(camera);
+    skyboxRenderer.render(camera); //skybox progress, samo treba popravit teksture
+
     glDisable(GL_DEPTH_TEST);
     uiRenderer.render();
     glEnable(GL_DEPTH_TEST);
 
-    //AND ENDS HERE...
-
-    //ImGui rendering goes here
+    //IMGUI UI RENDERING STARTS HERE
     imGuiRenderer.render();
 
     glfwSwapBuffers(window);
