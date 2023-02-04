@@ -57,68 +57,67 @@ void World::castRay(const Camera &camera, int button) {
             if(blockData->breakable == false) {
                 break;
             }
+
             if(button == GLFW_MOUSE_BUTTON_LEFT) {
                 player->addToInventory(*blockData);
                 editBlock(ray.getEnd(), block_type::AirBlock);
                 break; //break only the first block
             }
+
             else if(button == GLFW_MOUSE_BUTTON_RIGHT) {
-                if(
-                        player->getCurrentBlock() == nullptr
-                ) {
-                    //break the loop because the player inventory or the current slot is empty
-                    break;
-                }
-                glm::vec3 placeDest;
-                const auto& rayEnd = ray.getEnd();
+                auto currentBlock = player->getCurrentBlock();
 
-                float epsX1 = rayEnd.x - floor(rayEnd.x);
-                float epsY1 = rayEnd.y - floor(rayEnd.y);
-                float epsZ1 = rayEnd.z - floor(rayEnd.z);
+                if(currentBlock != ChunkBlockType::Air) {
+                    glm::vec3 placeDest;
+                    const auto& rayEnd = ray.getEnd();
 
-                float epsX2 = ceil(rayEnd.x) - rayEnd.x;
-                float epsY2 = ceil(rayEnd.y) - rayEnd.y;
-                float epsZ2 = ceil(rayEnd.z) - rayEnd.z;
+                    float epsX1 = rayEnd.x - floor(rayEnd.x);
+                    float epsY1 = rayEnd.y - floor(rayEnd.y);
+                    float epsZ1 = rayEnd.z - floor(rayEnd.z);
+
+                    float epsX2 = ceil(rayEnd.x) - rayEnd.x;
+                    float epsY2 = ceil(rayEnd.y) - rayEnd.y;
+                    float epsZ2 = ceil(rayEnd.z) - rayEnd.z;
 
 
-                float epsMin1 = std::min(epsX1, std::min(epsY1, epsZ1));
-                float epsMin2 = std::min(epsX2, std::min(epsY2, epsZ2));
-                float epsMin = std::min(epsMin1, epsMin2);
+                    float epsMin1 = std::min(epsX1, std::min(epsY1, epsZ1));
+                    float epsMin2 = std::min(epsX2, std::min(epsY2, epsZ2));
+                    float epsMin = std::min(epsMin1, epsMin2);
 
-                if(epsMin == epsX1) {
-                    placeDest = {
-                            rayEnd.x - 1, rayEnd.y, rayEnd.z
-                    };
-                }
-                else if(epsMin == epsZ1) {
-                    placeDest = {
-                            rayEnd.x, rayEnd.y, rayEnd.z - 1
-                    };
-                }
-                else if(epsMin == epsY1){
-                    placeDest = {
-                            rayEnd.x, rayEnd.y-1, rayEnd.z
-                    };
-                }
+                    if(epsMin == epsX1) {
+                        placeDest = {
+                                rayEnd.x - 1, rayEnd.y, rayEnd.z
+                        };
+                    }
+                    else if(epsMin == epsZ1) {
+                        placeDest = {
+                                rayEnd.x, rayEnd.y, rayEnd.z - 1
+                        };
+                    }
+                    else if(epsMin == epsY1){
+                        placeDest = {
+                                rayEnd.x, rayEnd.y-1, rayEnd.z
+                        };
+                    }
 
-                else if(epsMin == epsX2) {
-                    placeDest = {
-                            rayEnd.x + 1, rayEnd.y, rayEnd.z
-                    };
+                    else if(epsMin == epsX2) {
+                        placeDest = {
+                                rayEnd.x + 1, rayEnd.y, rayEnd.z
+                        };
+                    }
+                    else if(epsMin == epsZ2) {
+                        placeDest = {
+                                rayEnd.x, rayEnd.y, rayEnd.z + 1
+                        };
+                    }
+                    else {
+                        placeDest = {
+                                rayEnd.x, rayEnd.y + 1, rayEnd.z
+                        };
+                    }
+                    editBlock(placeDest, block_type::getBlockDataByType(currentBlock));
+                    player->removeFromInventory(currentBlock);
                 }
-                else if(epsMin == epsZ2) {
-                    placeDest = {
-                            rayEnd.x, rayEnd.y, rayEnd.z + 1
-                    };
-                }
-                else {
-                    placeDest = {
-                            rayEnd.x, rayEnd.y + 1, rayEnd.z
-                    };
-                }
-                auto currentBlock = *player->getCurrentBlock();
-                editBlock(placeDest, currentBlock);
-                player->removeFromInventory(currentBlock.blockType);
                 break;
             }
         }

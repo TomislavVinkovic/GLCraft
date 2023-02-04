@@ -28,6 +28,18 @@ UIRenderer::UIRenderer(
 
     unbindVAO();
     unbindVBO();
+
+    //setting up the character set
+    //I will hardcode the file paths for now
+//    characterSet.setFntFile("/home/tomislav/Desktop/faks/Projekt3D/GLCraft/fonts/tahoma/tahoma.fnt");
+//    characterSet.setTexture("/home/tomislav/Desktop/faks/Projekt3D/GLCraft/fonts/tahoma/tahoma.png");
+//    characterSet.parse();
+
+//    const auto& chars = characterSet.getCharacters();
+//    //std::cout << chars.size() << std::endl;
+//    for(const auto& c : chars) {
+//        std::cout << static_cast<char>(c.first) << std::endl;
+//    }
 }
 
 UIRenderer::UIRenderer(unsigned int scr_width, unsigned int scr_height)
@@ -75,6 +87,8 @@ void UIRenderer::deleteGraphicsData() {
 }
 
 void UIRenderer::render() {
+
+    //rendering the crosshair
     shader.use();
     bindVAO();
     bindVBO();

@@ -18,7 +18,7 @@ void Player::removeFromInventory(const ChunkBlockType& type) {
     inventory.removeBlock(type);
 }
 
-const ChunkBlockData *Player::getCurrentBlock() {
+const ChunkBlockType& Player::getCurrentBlock() const {
     return inventory.getCurrentBlock();
 }
 

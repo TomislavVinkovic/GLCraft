@@ -3,7 +3,13 @@
 #include "glad/glad.h"
 #include<GLFW/glfw3.h>
 #include "Shader.hpp"
+
+//#include "CharacterSet.h"
+
 #include <string>
+#include <vector>
+
+//treba dovrsit UI
 
 class UIRenderer {
     private:
@@ -19,6 +25,7 @@ class UIRenderer {
         void unbindVBO();
 
         const float crosshair_size = 0.f;
+        //CharacterSet characterSet;
     public:
         void deleteGraphicsData();
         UIRenderer(unsigned int scr_width,

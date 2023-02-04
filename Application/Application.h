@@ -8,6 +8,9 @@
 #include "Camera.h"
 #include "Renderer.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw_gl3.h"
+
 class Application {
     public:
         Application(unsigned int w, unsigned int h, const std::string& name, const Camera& camera);

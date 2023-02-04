@@ -105,5 +105,5 @@ namespace block_type {
             {128,240}, {144,256},
             false
     );
-
+    const ChunkBlockData& getBlockDataByType(const ChunkBlockType& blockType);
 };

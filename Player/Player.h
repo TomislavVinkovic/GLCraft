@@ -19,5 +19,5 @@ class Player {
         //TODO: Maybe I will need to change this function definition
         void removeFromInventory(const ChunkBlockType& type);
         void setSelectedSlot(unsigned int slot);
-        const ChunkBlockData* getCurrentBlock();
+        const ChunkBlockType& getCurrentBlock() const;
 };
