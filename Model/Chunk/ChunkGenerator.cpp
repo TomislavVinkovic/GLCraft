@@ -3,9 +3,28 @@
 ChunkGenerator::ChunkGenerator(const std::vector<glm::vec3>& chunkPositions, const glm::vec3& dimensions)
     : dimensions(dimensions),chunkPositions(chunkPositions) {}
 
-std::vector<Chunk> ChunkGenerator::generate() {
-    std::vector<Chunk> chunks(chunkPositions.size());
-    std::unordered_map<std::string, Chunk*> chunkMap;
+void ChunkGenerator::setDimensions(const glm::vec3 &dimensions) {
+    this->dimensions = dimensions;
+}
+
+void ChunkGenerator::setPositions(const std::vector<glm::vec3> &chunkPositions) {
+    this->chunkPositions = chunkPositions;
+}
+
+void ChunkGenerator::addChunk(const glm::vec3 &chunkPosition) {
+    chunkPositions.push_back(chunkPosition);
+    chunks.push_back(Chunk(dimensions, chunkPosition));
+    std::string key =
+            std::to_string(static_cast<int>(chunkPosition.x)) + " "
+            + std::to_string(static_cast<int>(chunkPosition.y)) + " "
+            + std::to_string(static_cast<int>(chunkPosition.z));
+    chunkMap.insert({key, &chunks.back()});
+    auto heightMap = createChunkHeightMap(chunks.back());
+    generateSmoothTerrain(chunks.back(), heightMap);
+}
+
+void ChunkGenerator::generate() {
+    chunks = std::vector<Chunk>(chunkPositions.size());
     int i = 0;
 
     for(const auto& chunkPosition : chunkPositions) {
@@ -18,31 +37,46 @@ std::vector<Chunk> ChunkGenerator::generate() {
         i++;
     }
     //first generate blocks for all chunks
+    std::vector<std::thread> threads;
     for(auto& chunk : chunks) {
-        auto heightMap = createChunkHeightMap(chunk);
-        generateSmoothTerrain(chunk, heightMap);
+        auto f = [&]() {
+            auto heightMap = createChunkHeightMap(chunk);
+            generateSmoothTerrain(chunk, heightMap);
+        };
+        threads.push_back(std::thread(f));
     }
-    //then create all rendering data
-    for(auto& chunk : chunks) {
-        generateChunk(chunk, chunkMap);
+    for(auto& t : threads) {
+        t.join();
     }
-    return chunks;
+
+    currentChunk = 0;
+}
+
+Chunk* ChunkGenerator::generateNextChunk() {
+    if(currentChunk >= chunks.size()) return nullptr;
+    Chunk* c = &chunks[currentChunk];
+    if(!c->getAirStatus()) {
+        generateChunk(chunks[currentChunk]);
+    }
+    currentChunk++;
+    return c;
 }
 
 void ChunkGenerator::generateChunk(
-        Chunk &chunk,
-        const ChunkMap& chunkMap
+        Chunk &chunk
 ) {
     const auto& chunkPosition = chunk.getPosition();
     chunkDirections.update(chunkPosition.x, chunkPosition.y, chunkPosition.z);
+    bool facesGenerated = false;
     for(const auto& block : chunk.getBlocks()) {
         glm::vec3 blockPosition = block.getPosition();
         if(block.getData()->blockType == ChunkBlockType::Air) {
             continue;
         }
-
+        facesGenerated = true;
         //else, check of you should render specific faces
         blockDirections.update(blockPosition.x,blockPosition.y,blockPosition.z);
+
         addFace(
                 chunk, block, Face::backFace, blockPosition,
                 blockDirections.back, chunkDirections.back, chunkMap
@@ -68,6 +102,9 @@ void ChunkGenerator::generateChunk(
                 blockDirections.top,chunkDirections.top, chunkMap
         );
     }
+//    if(facesGenerated) {
+//        std::cout << currentChunk << std::endl;
+//    }
 }
 
 void ChunkGenerator::addFace(
@@ -80,11 +117,10 @@ void ChunkGenerator::addFace(
         const std::unordered_map<std::string, Chunk*>& chunkMap
 ) {
 
-    if(shouldGenerateFace(chunk, adjBlockPos, adjChunkPosition, chunkMap)) {
+    if(shouldGenerateFace(chunk, block, adjBlockPos, adjChunkPosition, chunkMap)) {
         std::vector<GLfloat> texCoords;
         fillTextureCoords(block, texCoords, face);
-
-        chunk.addFace(face, position, texCoords);
+        chunk.addFace(block, face, position, texCoords);
         no_faces++;
     }
 }
@@ -163,12 +199,15 @@ void ChunkGenerator::fillTextureCoords(
 
 bool ChunkGenerator::shouldGenerateFace(
         Chunk& chunk,
+        const ChunkBlock& blockToPlace,
         const glm::vec3& adjBlockPosition,
         const glm::vec3& adjChunkPosition,
         const std::unordered_map<std::string, Chunk*>& chunkMap
 ) {
         auto block = chunk.block(adjBlockPosition);
-
+        if(blockToPlace.getData()->blockType == ChunkBlockType::Water && block.getData()->blockType != ChunkBlockType::Air) {
+            return false;
+        }
         std::string key =
                 std::to_string(static_cast<int>(adjChunkPosition.x)) + " "
                 + std::to_string(static_cast<int>(adjChunkPosition.y)) + " "
@@ -177,13 +216,40 @@ bool ChunkGenerator::shouldGenerateFace(
         auto it = chunkMap.find(key);
 
         //if there is no chunk then the only important condition is the adjacent block
-        if(it == chunkMap.end()) return block.getData()->blockType == ChunkBlockType::Air;
+        if(it == chunkMap.end())
+            return block.getData()->blockType == ChunkBlockType::Air
+            || (
+                    block.getData()->blockType == ChunkBlockType::Water
+                    && blockToPlace.getData()->blockType != ChunkBlockType::Water
+                );
 
         else {
             adjChunk = it->second;
             auto adjChunkBlock = adjChunk->block(adjBlockPosition);
-            return adjChunkBlock.getData()->blockType == ChunkBlockType::Air
-            && block.getData()->blockType == ChunkBlockType::Air;
+            if(
+                    (blockToPlace.getData()->blockType == ChunkBlockType::Water
+                    && block.getData()->blockType != ChunkBlockType::Air)
+                    || (
+                            blockToPlace.getData()->blockType == ChunkBlockType::Water
+                            && adjChunkBlock.getData()->blockType != ChunkBlockType::Air
+                    )
+            ) {
+                return false;
+            }
+            return
+                    (adjChunkBlock.getData()->blockType == ChunkBlockType::Air
+            && block.getData()->blockType == ChunkBlockType::Air)
+            || (
+            (
+                    adjChunkBlock.getData()->blockType == ChunkBlockType::Water ||
+                    adjChunkBlock.getData()->blockType == ChunkBlockType::Air
+            )
+             && (
+                     block.getData()->blockType == ChunkBlockType::Water ||
+                     block.getData()->blockType == ChunkBlockType::Air
+             )
+             && blockToPlace.getData()->blockType != ChunkBlockType::Water
+            );
         }
 }
 
@@ -191,7 +257,7 @@ int ChunkGenerator::getNumberOfFaces() {
     return no_faces;
 }
 
-void ChunkGenerator::regenerate(std::vector<Chunk>& chunks, std::vector<Chunk*> chunksToRegenerate) {
+void ChunkGenerator::regenerate(std::vector<Chunk*> chunksToRegenerate) {
     no_faces = 0;
     if(chunks.empty()) return;
     dimensions = chunks.begin()->getDimensions();
@@ -201,7 +267,7 @@ void ChunkGenerator::regenerate(std::vector<Chunk>& chunks, std::vector<Chunk*> 
             //std::cout << "Regenerating chunk" << std::endl;
             chunk.clearData();
             auto heightMap = createChunkHeightMap(chunk);
-            generateChunk(chunk, chunkMap);
+            generateChunk(chunk);
             chunk.updateGraphicsData();
         }
     }
@@ -240,19 +306,24 @@ void ChunkGenerator::generateSmoothTerrain(Chunk &chunk, const std::array<int, C
             int height = heightMap[z%(chunkSize-1) * chunkSize + x%(chunkSize-1)];
             for(int y = chunkPosition.y; y < chunkPosition.y + chunkSize; y++) {
                 if(y > height and y < noiseGenerator.getWaterLevel()) {
+                    chunk.setAirStatus(false);
                     chunk.placeBlock({x,y,z}, &block_type::WaterBlock);
+                    chunk.setHasWater(true);
                     continue;
                 }
                 else if(y > height) {
                     continue;
                 }
                 else if(y == height) {
+                    chunk.setAirStatus(false);
                     chunk.placeBlock({x,y,z}, &block_type::GrassBlock);
                 }
                 else if(y > height - 4) {
+                    chunk.setAirStatus(false);
                     chunk.placeBlock({x,y,z}, &block_type::DirtBlock);
                 }
                 else if(y <= height-4) {
+                    chunk.setAirStatus(false);
                     chunk.placeBlock({x,y,z}, &block_type::CobblestoneBlock);
                 }
             }

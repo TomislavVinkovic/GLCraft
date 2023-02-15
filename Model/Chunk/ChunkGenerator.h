@@ -8,6 +8,8 @@
 #include <iostream>
 #include <algorithm>
 #include <array>
+#include <thread>
+#include <ctime>
 
 #include "Chunk.h"
 #include "ChunkBlock.h"
@@ -26,17 +28,28 @@ class ChunkGenerator{
     public:
         ChunkGenerator() = default;
         explicit ChunkGenerator(const std::vector<glm::vec3>& chunkPositions, const glm::vec3& dimensions={16,16,16});
-        std::vector<Chunk> generate();
-        void regenerate(std::vector<Chunk>& chunks, std::vector<Chunk*> chunksToRegenerate);
+        void generate();
+        Chunk* generateNextChunk();
+        void regenerate(std::vector<Chunk*> chunksToRegenerate);
+
+        void addChunk(const glm::vec3& chunkPosition);
 
         //getters
         int getNumberOfFaces();
 
-    private:
+        //setters
+        void setDimensions(const glm::vec3& dimensions);
+        void setPositions(const std::vector<glm::vec3>& chunkPositions);
+
+private:
         //remember that this is fixed for now
         static const int chunkDimensions = 16*16*16;
         static const int chunkSize = 16;
         static const int heightMapSize = chunkSize*chunkSize;
+        std::unordered_map<std::string, Chunk*> chunkMap;
+        std::vector<Chunk> chunks;
+
+        int currentChunk = 0;
 
         //27891 //najdrazi
         //31245
@@ -47,8 +60,7 @@ class ChunkGenerator{
         void generateSmoothTerrain(Chunk& chunk, const std::array<int, heightMapSize>& heightMap);
 
         void generateChunk(
-                Chunk& chunk,
-                const ChunkMap& chunkMap
+            Chunk& chunk
         );
         ChunkMap generateChunkMap(std::vector<Chunk>& chunks);
         glm::vec3 dimensions;
@@ -66,6 +78,7 @@ class ChunkGenerator{
 
         bool shouldGenerateFace(
                 Chunk& chunk,
+                const ChunkBlock& blockToPlace,
                 const glm::vec3& adjBlockPosition,
                 const glm::vec3& adjChunkPosition,
                 const ChunkMap& chunkMap

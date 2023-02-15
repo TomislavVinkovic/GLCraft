@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 #include<string>
+#include<thread>
+#include <mutex>
 
 #include "Context.h"
 #include "Camera.h"

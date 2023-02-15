@@ -51,37 +51,83 @@ ChunkBlock Chunk::block(const glm::vec3 &searchPosition, bool logInfo) const {
 
 
 void Chunk::addFace(
+        const ChunkBlock& block,
         const std::vector<GLfloat> &face,
         const glm::vec3 &blockPosition,
         const std::vector<GLfloat>& textureCoords
 ) {
-    for(int i = 0, j = 0, k=0; i < 4; i++) {
-        vertices.push_back(face[j++] + blockPosition.x);
-        vertices.push_back(face[j++] + blockPosition.y);
-        vertices.push_back(face[j++] + blockPosition.z);
+    auto v = &vertices;
+    if(hasWater && block.getData()->blockType == ChunkBlockType::Water) {
+        v = &verticesWater;
+    }
 
-        //no longer necessary since they are removed
-        //j += 2; //skip the old texture coordinates
+    for(int i = 0, j = 0, k=0; i < 4; i++) {
+        v->push_back(face[j++] + blockPosition.x);
+        v->push_back(face[j++] + blockPosition.y);
+        v->push_back(face[j++] + blockPosition.z);
 
         //pushing back texture coordinates
         //both coordinates are normalized between 0 and 1
         float textureX = static_cast<float>(textureCoords[k++])/TEXTURE_PACK_SIZE;
         float textureY = 1.f - static_cast<float>(textureCoords[k++])/TEXTURE_PACK_SIZE;
         //std::cout << textureX << " " << textureY << std::endl;
-        vertices.push_back(textureX); //texture x
-        vertices.push_back(textureY); //texture y
+        v->push_back(textureX); //texture x
+        v->push_back(textureY); //texture y
+
+        //adding opacity
+        //for now let all values be 1
+        if(block.getData()->blockType == ChunkBlockType::Water) {
+            v->push_back(0.7f);
+        }
+        else v->push_back(1.f);
+
+        //adding face lighting information
+        //left and right face : 0.86
+        //front and back face : 0.80
+        //bottom face: 0.50
+        //top face : 1.0
+        if((face == Face::frontFace || face == Face::backFace) && block.getData()->blockType != ChunkBlockType::Water) {
+            v->push_back(0.80f);
+        }
+
+        else if((face == Face::leftFace || face == Face::rightFace) && block.getData()->blockType != ChunkBlockType::Water) {
+            v->push_back(0.7f);
+        }
+
+        else if(face == Face::bottomFace && block.getData()->blockType != ChunkBlockType::Water) {
+            v->push_back(0.5f);
+        }
+
+        else {
+            v->push_back(1.0f);
+        }
     }
     //update indices
-    indices.insert(indices.end(), {
-        currentVIndex,
-        currentVIndex + 1,
-        currentVIndex + 2,
+    if(hasWater && block.getData()->blockType == ChunkBlockType::Water) {
+        indicesWater.insert(indicesWater.end(), {
+                currentVIndexWater,
+                currentVIndexWater + 1,
+                currentVIndexWater + 2,
 
-        currentVIndex + 2,
-        currentVIndex + 3,
-        currentVIndex
-    });
-    currentVIndex += 4;
+                currentVIndexWater + 2,
+                currentVIndexWater + 3,
+                currentVIndexWater
+        });
+        currentVIndexWater += 4;
+    }
+
+    else {
+        indices.insert(indices.end(), {
+                currentVIndex,
+                currentVIndex + 1,
+                currentVIndex + 2,
+
+                currentVIndex + 2,
+                currentVIndex + 3,
+                currentVIndex
+        });
+        currentVIndex += 4;
+    }
 }
 
 const glm::vec3 &Chunk::getPosition() const{
@@ -93,6 +139,46 @@ void Chunk::generateGraphicsData() {
     if(VBO == 0) genVbo();
     if(EBO == 0) genEbo();
 
+    //water data
+    if(hasWater) {
+        if(VAO_WATER == 0) genVaoWater();
+        if(VBO_WATER == 0) genVboWater();
+        if(EBO_WATER == 0) genEboWater();
+
+        bindVAOWater();
+        bindVBOWater();
+
+        glBufferData(
+                GL_ARRAY_BUFFER,
+                verticesWater.size() * sizeof(GLfloat),
+                verticesWater.data(),
+                GL_STATIC_DRAW //mozda ce morati biti dynamic
+        );
+        //atribut pozicije
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        //atribut teksturne koordinate
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
+        //atribut prozirnosti
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(2);
+
+        //atribut osvjetljenosti
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(3);
+
+        bindEBOWater();
+        glBufferData(
+                GL_ELEMENT_ARRAY_BUFFER,
+                indicesWater.size() * sizeof(GLuint),
+                indicesWater.data(),
+                GL_STATIC_DRAW
+        );
+    }
+
     bindVAO();
     bindVBO();
 
@@ -103,12 +189,20 @@ void Chunk::generateGraphicsData() {
             GL_STATIC_DRAW //mozda ce morati biti dynamic
     );
     //atribut pozicije
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(0);
 
     //atribut teksturne koordinate
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
+
+    //atribut prozirnosti
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+
+    //atribut osvjetljenosti
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(3);
 
     bindEBO();
     glBufferData(
@@ -117,7 +211,6 @@ void Chunk::generateGraphicsData() {
             indices.data(),
             GL_STATIC_DRAW
     );
-    //TU SAM STAO
 
     //test ovoga
     //clearData();
@@ -289,4 +382,70 @@ void Chunk::placeBlock(const glm::vec3 &pos, const ChunkBlockData* blockData) {
 
     //TODO: implement setters to solve copying
     blocks[offset] = ChunkBlock(pos, blockData);
+}
+
+bool Chunk::getAirStatus() {
+    return airChunk;
+}
+
+void Chunk::setAirStatus(bool status) {
+    airChunk = status;
+}
+
+void Chunk::sortByOpacity() {
+    std::sort(blocks.begin(), blocks.end(), [](const ChunkBlock& a, const ChunkBlock& b) {
+        return a.getOpacity() > b.getOpacity();
+    });
+}
+
+bool Chunk::getHasWater() {
+    return hasWater;
+}
+
+void Chunk::setHasWater(bool water) {
+    hasWater = water;
+}
+
+void Chunk::genEboWater() {
+    glGenBuffers(1, &EBO_WATER);
+}
+
+void Chunk::genVboWater() {
+    glGenBuffers(1, &VBO_WATER);
+}
+
+void Chunk::genVaoWater() {
+    glGenVertexArrays(1, &VAO_WATER);
+}
+
+void Chunk::bindVAOWater() const {
+    glBindVertexArray(VAO_WATER);
+}
+
+void Chunk::bindVBOWater() const {
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_WATER);
+}
+
+void Chunk::bindEBOWater() const {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_WATER);
+}
+
+unsigned int Chunk::getVAOWater() const {
+    return VAO_WATER;
+}
+
+unsigned int Chunk::getVBOWater() const {
+    return VBO_WATER;
+}
+
+unsigned int Chunk::getEBOWater() const {
+    return EBO_WATER;
+}
+
+const std::vector<GLuint> &Chunk::getWaterIndices() const {
+    return indicesWater;
+}
+
+const std::vector<GLfloat> &Chunk::getWaterVertices() const {
+    return verticesWater;
 }

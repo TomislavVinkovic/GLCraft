@@ -18,3 +18,11 @@ ChunkBlock ChunkBlock::operator=(const ChunkBlock &block) {
 
     return *this;
 }
+
+const float ChunkBlock::getOpacity() const {
+    return opacity;
+}
+
+void ChunkBlock::setOpacity(float op) {
+    opacity = op;
+}

@@ -25,3 +25,11 @@ const ChunkBlockType& Player::getCurrentBlock() const {
 void Player::setSelectedSlot(unsigned int slot) {
     inventory.setSelectedSlot(slot);
 }
+
+const glm::vec3 &Player::getPosition() const {
+    return camera.Position;
+}
+
+void Player::setPosition(const glm::vec3 &pos) {
+    camera.Position = pos;
+}

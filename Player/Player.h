@@ -18,6 +18,14 @@ class Player {
         void addToInventory(const ChunkBlockData& block);
         //TODO: Maybe I will need to change this function definition
         void removeFromInventory(const ChunkBlockType& type);
+
+        //setters
         void setSelectedSlot(unsigned int slot);
+        void setPosition(const glm::vec3& pos);
+
+        //getters
         const ChunkBlockType& getCurrentBlock() const;
+        const glm::vec3& getPosition() const;
+
+
 };

@@ -14,6 +14,7 @@
 class ChunkBlock {
     const ChunkBlockData* blockData;
     glm::vec3 position;
+    float opacity = 1.f;
 public:
     ChunkBlock(glm::vec3 position, const ChunkBlockData* blockData = &block_type::AirBlock);
     ChunkBlock operator=(const ChunkBlock& block);
@@ -21,4 +22,8 @@ public:
     //getters
     const glm::vec3& getPosition() const;
     const ChunkBlockData* getData() const;
+    const float getOpacity() const;
+
+    //setters
+    void setOpacity(float op);
 };

@@ -8,11 +8,14 @@
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 
+#include <ctime>
+
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "Application.h"
 #include "Camera.h"
 int main() {
+    srand(time(NULL));
     Application App(1920, 1080, "GLCraft", Camera(1920, 1080));
     App.runLoop();
     return 0;
