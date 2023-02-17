@@ -14,10 +14,12 @@
 #include "Chunk.h"
 #include "ChunkBlock.h"
 #include "Face.h"
+#include "Random.h"
 
 #include "AdjacentBlockPositions.h"
 #include "AdjacentChunkPositions.h"
 #include "NoiseGenerator.h"
+#include "Generation/Terrain/TerrainGenerator.h"
 
 #include <unordered_map>
 #include<string>
@@ -26,26 +28,33 @@ typedef std::unordered_map<std::string, Chunk*> ChunkMap;
 
 class ChunkGenerator{
     public:
-        ChunkGenerator() = default;
+        ChunkGenerator();
         explicit ChunkGenerator(const std::vector<glm::vec3>& chunkPositions, const glm::vec3& dimensions={16,16,16});
         void generate();
         Chunk* generateNextChunk();
         void regenerate(std::vector<Chunk*> chunksToRegenerate);
 
-        void addChunk(const glm::vec3& chunkPosition);
+        void addChunks(const std::vector<glm::vec3>& newPositions);
 
         //getters
         int getNumberOfFaces();
+        int getCurrentChunk();
 
         //setters
         void setDimensions(const glm::vec3& dimensions);
         void setPositions(const std::vector<glm::vec3>& chunkPositions);
 
 private:
+        Random<std::minstd_rand> randomEngine;
+        GrasslandBiome grassBiome;
+        DesertBiome desertBiome;
+        OceanBiome oceanBiome;
+        ForestBiome forestBiome;
         //remember that this is fixed for now
         static const int chunkDimensions = 16*16*16;
         static const int chunkSize = 16;
         static const int heightMapSize = chunkSize*chunkSize;
+        static const int biomeMapSize = (chunkSize+1)*(chunkSize + 1);
         std::unordered_map<std::string, Chunk*> chunkMap;
         std::vector<Chunk> chunks;
 
@@ -53,11 +62,26 @@ private:
 
         //27891 //najdrazi
         //31245
-        NoiseGenerator noiseGenerator{27891};
+        static NoiseGenerator noiseGenerator;
+        static NoiseGenerator biomeGenerator;
+
+        //isprobavanje novog terrain generatora
+        TerrainGenerator terrainGenerator;
 
         //height map generation
         std::array<int, heightMapSize> createChunkHeightMap(Chunk& chunk);
-        void generateSmoothTerrain(Chunk& chunk, const std::array<int, heightMapSize>& heightMap);
+        std::array<int, biomeMapSize> createChunkBiomeMap(Chunk& chunk);
+        void generateSmoothTerrain(
+            Chunk& chunk,
+            const std::array<int, heightMapSize>& heightMap,
+            const std::array<int, biomeMapSize>& biomeMap
+        );
+
+        const Biome& getBiome(
+                int x,
+                int z,
+                const std::array<int, biomeMapSize>& biomeMap
+        ) const;
 
         void generateChunk(
             Chunk& chunk
