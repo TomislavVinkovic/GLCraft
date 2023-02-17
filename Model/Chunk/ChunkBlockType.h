@@ -12,5 +12,7 @@ enum class ChunkBlockType :  Block_t
     Cobblestone,
     Sand,
     Wood,
-    Water
+    Water,
+    Cactus,
+    Bush
 };
