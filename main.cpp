@@ -15,6 +15,7 @@
 #include "Application.h"
 #include "Camera.h"
 int main() {
+    srand(time(NULL));
     Application App(1920, 1080, "GLCraft", Camera(1920, 1080));
     App.runLoop();
     return 0;

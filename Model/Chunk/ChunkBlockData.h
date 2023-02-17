@@ -95,24 +95,6 @@ namespace block_type {
             {64,240}, {80,256},
             {64,240}, {80,256}
     );
-    const ChunkBlockData CactusBlock = ChunkBlockData(
-            ChunkBlockType::Cactus, "Cactus",
-            {144,224}, {160,240},
-            {144,224}, {160,240},
-            {144,240}, {160,256},
-            {144,240}, {160,256},
-            {144,240}, {160,256},
-            {144,240}, {160,256}
-    );
-    const ChunkBlockData BushBlock = ChunkBlockData(
-            ChunkBlockType::Bush, "Bush",
-            {96,240}, {112,256},
-            {96,240}, {112,256},
-            {96,240}, {112,256},
-            {96,240}, {112,256},
-            {96,240}, {112,256},
-            {96,240}, {112,256}
-    );
     const ChunkBlockData WaterBlock = ChunkBlockData(
             ChunkBlockType::Water, "Water",
             {128,240}, {144,256},

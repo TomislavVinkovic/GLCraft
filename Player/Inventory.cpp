@@ -54,6 +54,7 @@ Inventory::Inventory() {
 void Inventory::setSelectedSlot(unsigned int slot) {
     if(slot > 9) return;
     selectedSlot = inventory.find(slot);
+    std::cout << "Selected slot " << slot << std::endl;
 }
 
 const ChunkBlockType& Inventory::getCurrentBlock() const {

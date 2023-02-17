@@ -23,12 +23,7 @@ namespace block_type {
         if(blockType == ChunkBlockType::Grass) {
             return GrassBlock;
         }
-        if(blockType == ChunkBlockType::Cactus) {
-            return CactusBlock;
-        }
-        if(blockType == ChunkBlockType::Bush) {
-            return BushBlock;
-        }
+
         else return GrassBlock;
     }
 }

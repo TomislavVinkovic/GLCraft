@@ -10,12 +10,36 @@ const std::vector<Chunk*> &World::getChunks() const {
 
 void World::generate() {
     glm::vec3 defaultDimensions = glm::vec3(16,16,16);
-    generator.setDimensions(defaultDimensions);
+    float positionZ = 0.f;
+    float positionX = 0.f;
+    float positionY = 160.f;
+
+//    for(int i = 0; i < 20; i++) {
+//        for(int j = 0; j < 20; j++) {
+//            for(int k = 0; k <= 20; k++) {
+//                chunkPositions.push_back({positionX, positionY, positionZ});
+//                positionX += 16;
+//            }
+//            positionX = 0;
+//            positionZ += 16;
+//        }
+//        positionX = 0;
+//        positionZ = 0;
+//        positionY -= 16;
+//    }
+
+    //the first of chunk positions being relative to the player
+    //no infinite world yet :D
     updatePositions();
+
+
+
 
     //generate chunks with their heightmaps
     //then later in the rendering pipeline, chunks will be rendered one by one, reducing load times
     generator.setPositions(chunkPositions);
+    generator.setDimensions(defaultDimensions);
+
     generator.generate();
 }
 
@@ -23,9 +47,9 @@ void World::generate() {
 void World::updatePositions() {
     const auto& playerPos = player->getPosition();
     glm::vec3 playerChunk = {
-            (static_cast<int>(floor(playerPos.x))/16)*16,
+            (static_cast<int>(floor(playerPos.x))/16)*16 - 16,
             (static_cast<int>(floor(playerPos.y))/16)*16 - 16,
-            (static_cast<int>(floor(playerPos.z))/16)*16,
+            (static_cast<int>(floor(playerPos.z))/16)*16 - 16,
     };
     //do not update if the player has not moved
     if(playerChunk == playerChunkPosition) return;
@@ -38,10 +62,6 @@ void World::updatePositions() {
         float positionX = playerChunk.x;
         float positionY = playerChunk.y - 16;
 
-        float ogPositionX = playerChunk.x;
-        float ogPositionY = playerChunk.y - 16;
-        float ogPositionZ = playerChunk.z;
-
         for(int i = 0; i < 10; i++) {
             for(int j = 0; j < 30; j++) {
                 for(int k = 0; k < 30; k++) {
@@ -49,73 +69,65 @@ void World::updatePositions() {
                     if(positionX > largestX) largestX = positionX;
                     positionX += 16;
                 }
-                positionX = ogPositionX;
-                if(positionZ > largestZ) largestZ = positionZ;
+                positionX = 0;
+                if(positionZ > largestZ) largestZ = positionX;
                 positionZ += 16;
             }
-            positionX = ogPositionX;
-            positionZ = ogPositionZ;
+            positionX = 0;
+            positionZ = 0;
             positionY -= 16;
         }
 
+        float pcx2 = pow(playerChunk.x, 2);
+        float pcy2 = pow(playerChunk.y, 2);
+        float pcz2 = pow(playerChunk.z, 2);
+
         std::sort(chunkPositions.begin(), chunkPositions.end(), [&](auto& a, auto& b) {
-            return pow(a.x - playerChunk.x, 2) + pow(a.y - playerChunk.y, 2) + pow(a.z - playerChunk.z, 2)
-                < pow(b.x - playerChunk.x, 2) + pow(b.y - playerChunk.y, 2) + pow(b.z - playerChunk.z, 2);
+            return ((pow(a.x, 2) - pcx2) + (pow(a.y, 2) - pcy2) + (pow(a.z, 2) - pcz2))
+                < ((pow(b.x, 2) - pcx2) + (pow(b.y, 2) - pcy2) + (pow(b.z, 2) - pcz2));
         });
-        //player->setPosition({playerPos.x, playerPos.y-16, playerPos.z});
-        auto* p = &chunkPositions.back();
+        player->setPosition({playerPos.x, playerPos.y-16, playerPos.z});
         firstGeneration = false;
     }
-//    else {
-//        int playerX = static_cast<int>(floor(playerPos.x))/16;
-//        int playerZ = static_cast<int>(floor(playerPos.z))/16;
+
+    //generate a row on the z direction
+//    else if(!firstGeneration && playerChunkPosition.z > prevChunkPosition.z) {
+//        float positionZ = largestZ;
+//        float positionX = playerChunk.x;
+//        float positionY = playerChunk.y - 16;
 //
-//        std::unordered_map<std::string, glm::vec3> pos;
-//        for(const auto& p : chunkPositions) {
-//            std::string key = std::to_string(static_cast<int>(p.x)) + " "
-//          + std::to_string(static_cast<int>(p.z));
-//            if(
-//                    pos.find(key) == pos.end()
-//                    || pos[key].y < p.y
-//            ) {
-//                pos[key] = p;
-//            }
+//        int i = 0;
+//        for(int x = positionX; x < 10; x++) {
+//            chunkPositions.push_back({x + i*16, positionY, largestZ + 1});
+//            generator.addChunk({x + i*16, positionY, largestZ + 1});
+//            i++;
 //        }
+//        largestZ++;
+//    }
 //
-//        std::vector<glm::vec3> newPositions;
-//        //zasad cemo loadati 2 reda chunkova sa svake strane
-//        //i necemo micati stare chunkove
-//        for (int i = 0; i < 5; i++) {
-//            int minX = std::max(playerX  - i, 0);
-//            int minZ = std::max(playerZ  - i, 0);
-//            int maxX = playerX + i;
-//            int maxZ = playerZ + i;
+//    else if(!firstGeneration && playerChunkPosition.x > prevChunkPosition.x) {
+//        float positionZ = playerChunk.z;
+//        float positionX = largestX;
+//        float positionY = playerChunk.y - 16;
 //
-//            for (int x = minX; x < maxX; ++x)
-//            {
-//                for (int z = minZ; z < maxZ; ++z)
-//                {
-//                    std::string key = std::to_string(static_cast<int>(x * 16)) + " "
-//                                      + std::to_string(static_cast<int>(z * 16));
-//                    if(pos.find(key) == pos.end()) {
-//                        newPositions.push_back({x * 16, 140 - 16, z*16});
-//                    }
-//                }
-//            }
+//        int i = 0;
+//        for(int z = positionZ; z < 10; z++) {
+//            chunkPositions.push_back({largestX + 1, positionY, z + i*16});
+//            generator.addChunk({largestX + 1, positionY, z + i*16});
+//            i++;
 //        }
-//        if(!newPositions.empty()) {
-//            generator.addChunks(newPositions);
-//        }
+//        largestX++;
 //    }
 }
 
-void World::generateNext() {
+Chunk* World::generateNext() {
     Chunk* c = generator.generateNextChunk();
     if(c != nullptr) {
         c->generateGraphicsData();
         chunks.push_back(c);
     }
-    return;
+
+    return c;
 }
 
 void World::deleteData() {
@@ -132,8 +144,8 @@ void World::castRay(const Camera &camera, int button) {
         auto blockData = block.getData();
         if(blockData->blockType != ChunkBlockType::Air) {
             //break the loop, but not the block
-            if(blockData->blockType == ChunkBlockType::Water) {
-                continue;
+            if(blockData->breakable == false) {
+                break;
             }
 
             if(button == GLFW_MOUSE_BUTTON_LEFT) {

@@ -54,7 +54,7 @@ class Chunk {
         std::vector<GLuint> indicesWater;
 
         std::vector<ChunkBlock>::iterator blockInner(const glm::vec3& searchPosition);
-        bool hasWater = false;
+        bool hasWater = true;
 
     public:
         //constructors and destructors

@@ -42,7 +42,7 @@ class World {
         const std::vector<Chunk*>& getChunks() const;
 
         void generate();
-        void generateNext();
+        Chunk* generateNext();
 
 
         //void regenerate();

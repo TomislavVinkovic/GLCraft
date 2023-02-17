@@ -217,19 +217,12 @@ void Chunk::generateGraphicsData() {
 }
 
 void Chunk::deleteGraphicsData() {
-    if(VAO != 0) glDeleteVertexArrays(1, &VAO);
-    if(VBO != 0) glDeleteBuffers(1, &VBO);
-    if(EBO != 0) glDeleteBuffers(1, &EBO);
-    if(VAO_WATER != 0) glDeleteBuffers(1, &VAO_WATER);
-    if(VBO_WATER != 0) glDeleteBuffers(1, &VBO_WATER);
-    if(EBO_WATER != 0) glDeleteBuffers(1, &EBO_WATER);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     VAO = 0;
     VBO = 0;
     EBO = 0;
-
-    VAO_WATER = 0;
-    VBO_WATER = 0;
-    EBO_WATER = 0;
 }
 
 void Chunk::genEbo() {
