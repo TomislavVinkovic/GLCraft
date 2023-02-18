@@ -35,3 +35,7 @@ NoiseParameters DesertBiome::getNoiseParameters()
 const ChunkBlockData &DesertBiome::getUndergroundBlock(Rand &rand) const {
     return block_type::SandBlock;
 }
+
+const ChunkBlockData &DesertBiome::getFlowerBlock(Rand &rand) const {
+    return block_type::ShrugBlock;
+}

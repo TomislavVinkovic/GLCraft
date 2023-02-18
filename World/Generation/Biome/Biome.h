@@ -14,7 +14,7 @@ public:
           int seed);
     virtual ~Biome() = default;
 
-    //virtual const ChunkBlockData& getPlant(Rand &rand) const = 0;
+    virtual const ChunkBlockData& getFlowerBlock(Rand& rand) const;
     virtual const ChunkBlockData& getTopBlock(Rand &rand) const = 0;
     virtual const ChunkBlockData& getUnderWaterBlock(Rand &rand) const = 0;
     virtual const ChunkBlockData& getUndergroundBlock(Rand &rand) const;

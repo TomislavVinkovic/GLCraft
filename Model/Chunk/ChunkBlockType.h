@@ -14,5 +14,7 @@ enum class ChunkBlockType :  Block_t
     Wood,
     Water,
     Cactus,
-    Bush
+    Bush,
+    Shrug,
+    Flower
 };

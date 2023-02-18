@@ -13,6 +13,7 @@ void ChunkGenerator::generate() {
     int i = 0;
     for(const auto& chunkPosition : chunkPositions) {
         chunks[i] = Chunk(dimensions, chunkPosition);
+        chunks[i].getABAB().update({chunkPosition.x, chunkPosition.y, chunkPosition.z});
         std::string key =
                 std::to_string(static_cast<int>(chunkPosition.x)) + " "
                 + std::to_string(static_cast<int>(chunkPosition.y)) + " "

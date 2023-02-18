@@ -29,6 +29,12 @@ namespace block_type {
         if(blockType == ChunkBlockType::Bush) {
             return BushBlock;
         }
+        if(blockType == ChunkBlockType::Shrug) {
+            return ShrugBlock;
+        }
+        if(blockType == ChunkBlockType::Flower) {
+            return FlowerBlock;
+        }
         else return GrassBlock;
     }
 }

@@ -12,9 +12,11 @@
 #include "ChunkBlockType.h"
 #include "AdjacentChunkPositions.h"
 #include "Face.h"
+#include "ABAB.h"
 
 class Chunk {
     private:
+        ABAB abab;
         //TODO: remove hardcoding
         //I will hardcode this for now
 
@@ -57,6 +59,7 @@ class Chunk {
         bool hasWater = false;
 
     public:
+        ABAB& getABAB();
         //constructors and destructors
         Chunk(const glm::vec3& dimensions={16,16,16}, const glm::vec3& position={0,0,0});
         //TODO: IMPLEMENT DESTRUCTOR

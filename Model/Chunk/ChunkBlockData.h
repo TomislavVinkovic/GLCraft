@@ -123,5 +123,23 @@ namespace block_type {
             {128,240}, {144,256},
             false
     );
+    const ChunkBlockData ShrugBlock = ChunkBlockData(
+            ChunkBlockType::Shrug, "Shrug",
+            {0,224}, {16, 240},
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            {112,240}, {128,256},
+            true
+    );
+    const ChunkBlockData FlowerBlock = ChunkBlockData(
+            ChunkBlockType::Flower, "Flower",
+            {16,224}, {32, 240},
+            {32,240}, {48,256},
+            {16,240},{32,256},{16,240},
+            {32,256},{16,240},
+            {32,256},{16,240},{32,256},true
+    );
     const ChunkBlockData& getBlockDataByType(const ChunkBlockType& blockType);
 };

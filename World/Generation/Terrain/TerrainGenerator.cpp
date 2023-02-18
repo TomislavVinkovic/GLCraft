@@ -4,6 +4,9 @@
 namespace {
     const int biomeSeed = RandomSingleton::get().intInRange(424, 325322);
     const int heightSeed = RandomSingleton::get().intInRange(424, 325322);
+
+//    const int biomeSeed = 58917;
+//    const int heightSeed = 239544;
 }
 
 NoiseGenerator TerrainGenerator::biomeNoiseGenerator(biomeSeed * 2);
@@ -15,6 +18,7 @@ TerrainGenerator::TerrainGenerator() :
         oceanBiome(biomeSeed),
         forestBiome(biomeSeed)
 {
+    //std::cout << biomeSeed << " " << heightSeed << std::endl;
     srand(time(NULL));
     setupNoise();
 }
@@ -76,12 +80,23 @@ void TerrainGenerator::setBlocks(Chunk& chunk, int maxHeight, HeightMap& heightM
                 }
 
                 else {
-                    if (randomEngine.intInRange(0, biome.getTreeFrequency()) ==
-                        5 && y >= height - 6
-                        && y > waterLevel) {
+                    if (
+                            randomEngine.intInRange(0, biome.getTreeFrequency()) ==
+                            5 && y >= height - 6
+                            && y > waterLevel
+                    ) {
                         trees.push_back({x, y + 1, z});
                     }
-                    if(y > height and y < waterLevel) {
+                    if (
+                            randomEngine.intInRange(0, biome.getPlantFrequency()) == 5
+                            && y >= height - 6
+                            && y > waterLevel
+                    ) {
+                        chunk.setAirStatus(false);
+                        chunk.placeBlock({x,y,z}, &biome.getFlowerBlock(randomEngine));
+                        chunk.setHasWater(true);
+                    }
+                    else if(y > height and y < waterLevel) {
                         chunk.setAirStatus(false);
                         chunk.placeBlock({x,y,z}, &block_type::WaterBlock);
                         chunk.setHasWater(true);

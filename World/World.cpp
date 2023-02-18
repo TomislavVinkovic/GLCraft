@@ -51,8 +51,8 @@ void World::updatePositions() {
         float ogPositionZ = playerChunk.z;
 
         for(int i = 0; i < 10; i++) {
-            for(int j = 0; j < 30; j++) {
-                for(int k = 0; k < 30; k++) {
+            for(int j = 0; j < 50; j++) {
+                for(int k = 0; k < 50; k++) {
                     chunkPositions.push_back({positionX, positionY, positionZ});
                     if(positionX > largestX) largestX = positionX;
                     positionX += 16;

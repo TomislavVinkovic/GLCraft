@@ -33,33 +33,36 @@ void ChunkRenderer::render(Camera &camera) {
     shader.setMatrix4fv("model", model);
 
 
-    int i = 0;
+
     //rendering all currently loaded chunk
     for(auto& chunk : world->getChunks()) {
-        glEnable(GL_CULL_FACE);
-        i++;
-        chunk->bindVAO();
-        shader.setMatrix4fv("view", camera.GetViewMatrix());
-        chunk->bindEBO();
+        auto& abab = chunk->getABAB();
+        //camera.getViewFrustum().isBoxInFrustum(chunk->getABAB())
+        if(camera.getViewFrustum().isBoxInFrustum(abab)) {
+            glEnable(GL_CULL_FACE);
+            chunk->bindVAO();
+            shader.setMatrix4fv("view", camera.GetViewMatrix());
+            chunk->bindEBO();
 
-        glDrawElements(GL_TRIANGLES, chunk->getIndices().size(), GL_UNSIGNED_INT, 0);
-        glDisable(GL_CULL_FACE);
+            glDrawElements(GL_TRIANGLES, chunk->getIndices().size(), GL_UNSIGNED_INT, 0);
+            glDisable(GL_CULL_FACE);
 
 
-        //if there are water blocks
-        glEnable( GL_BLEND );
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        if(chunk->getHasWater()) {
-            chunk->bindVAOWater();
-            chunk->bindEBOWater();
+            //if there are water blocks
+            glEnable( GL_BLEND );
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            if(chunk->getHasWater()) {
+                chunk->bindVAOWater();
+                chunk->bindEBOWater();
 
-            glDrawElements(GL_TRIANGLES, chunk->getWaterIndices().size(), GL_UNSIGNED_INT, 0);
+                glDrawElements(GL_TRIANGLES, chunk->getWaterIndices().size(), GL_UNSIGNED_INT, 0);
+            }
+            glDisable(GL_BLEND);
+
+            //unbinding
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
         }
-        glDisable(GL_BLEND);
-
-        //unbinding
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
     }
 }
 

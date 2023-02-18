@@ -2,6 +2,7 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include <iostream>
+#include "ViewFrustum.h"
 #include "Movement.h"
 
 struct Camera {
@@ -25,7 +26,7 @@ struct Camera {
     float Zoom = 45.f;
 
     Camera(unsigned int scr_width, unsigned int scr_height)
-        : Camera(45.f, scr_width, scr_height, 0.1f, 1000.f){}
+        : Camera(45.f, scr_width, scr_height, 0.1f, 250.f){}
 
     Camera(
       float FOV, unsigned int scr_width, unsigned int scr_height, float zNear, float zFar,
@@ -70,6 +71,10 @@ struct Camera {
     void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
     void ProcessMouseScroll(float yOffset);
 
+    //getters
+    const ViewFrustum& getViewFrustum() const;
+
     private:
+        ViewFrustum viewFrustum;
         void updateCameraVectors(bool init = false);
 };

@@ -1,8 +1,13 @@
 #include "Chunk.h"
 
 //TODO: Add random chunk generation
-Chunk::Chunk(const glm::vec3 &dimensions, const glm::vec3& position) : dimensions(dimensions), position(position) {
+Chunk::Chunk(const glm::vec3 &dimensions, const glm::vec3& position)
+    : dimensions(dimensions)
+    ,position(position)
+    ,abab({16,16,16}){
+
       //this will all be air blocks
+        abab.update({position.x * 16, position.y * 16, position.z * 16});
       for(int k = position.y; k < position.y + dimensions.y; k += 1) {
             for(int i = position.x; i < position.x + dimensions.x; i += 1) {
                 for(int j = position.z; j < position.z + dimensions.z; j += 1) {
@@ -75,7 +80,6 @@ void Chunk::addFace(
         v->push_back(textureY); //texture y
 
         //adding opacity
-        //for now let all values be 1
         if(block.getData()->blockType == ChunkBlockType::Water) {
             v->push_back(0.7f);
         }
@@ -468,4 +472,8 @@ const std::vector<GLuint> &Chunk::getWaterIndices() const {
 
 const std::vector<GLfloat> &Chunk::getWaterVertices() const {
     return verticesWater;
+}
+
+ABAB &Chunk::getABAB() {
+    return abab;
 }

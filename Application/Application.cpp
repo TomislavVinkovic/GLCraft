@@ -22,13 +22,14 @@ void Application::runLoop() {
     while(!glfwWindowShouldClose(context.window)) {
         context.adjustDeltaTime();
         context.handleKeyboardInput(context.window); //kontinuriani input
+
+        context.state.world.sortChunksByDistanceToCamera(getCamera());
         renderer.render(context.window, context.state.player.getCamera());
 
         //generate the next chunk
         //generiranje grafickih podataka
         context.state.world.updatePositions();
         context.state.world.generateNext();
-        context.state.world.sortChunksByDistanceToCamera(getCamera());
     }
     //ImGui cleanup
     ImGui_ImplGlfwGL3_Shutdown();

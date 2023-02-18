@@ -53,4 +53,10 @@ void Camera::updateCameraVectors(bool init) {
     Up    = glm::normalize(glm::cross(Right, Front));
     //std::cout << "Front: " << Front.x << " " << Front.y << " " << Front.z << std::endl;
 
+    viewFrustum.update(ProjectionMatrix * GetViewMatrix());
+
+}
+
+const ViewFrustum &Camera::getViewFrustum() const {
+    return viewFrustum;
 }

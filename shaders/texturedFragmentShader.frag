@@ -9,8 +9,6 @@ uniform sampler2D texture1;
 
 void main()
 {
-    FragColor = vec4(vec3(texture(texture1, TexCoord)), Opacity);
-    FragColor.x *= Lighting;
-    FragColor.y *= Lighting;
-    FragColor.z *= Lighting;
+    FragColor = texture(texture1, TexCoord) * Lighting;
+    FragColor.a = Opacity;
 }

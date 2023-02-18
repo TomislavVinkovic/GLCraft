@@ -5,6 +5,7 @@
 class DesertBiome : public Biome {
 public:
     DesertBiome(int seed);
+    const ChunkBlockData& getFlowerBlock(Rand& rand) const override;
     const ChunkBlockData& getTopBlock(Rand &rand) const override;
     const ChunkBlockData& getUnderWaterBlock(Rand &rand) const override;
     const ChunkBlockData& getUndergroundBlock(Rand &rand) const;
