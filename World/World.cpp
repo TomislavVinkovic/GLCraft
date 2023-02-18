@@ -24,7 +24,7 @@ void World::generate() {
             y = chunk.getPosition().y;
         }
     }
-    player->setPosition({player->getPosition().x, y+16, player->getPosition().z});
+    player->setPosition({player->getPosition().x + 1, y+16, player->getPosition().z + 1});
 }
 
 //ne radi apsolutno nista kod ovoga, osim inicijalnog generiranja svijeta

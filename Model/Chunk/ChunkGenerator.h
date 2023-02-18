@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <thread>
+#include <mutex>
 #include <ctime>
 
 #include "Chunk.h"
@@ -44,6 +45,7 @@ class ChunkGenerator{
         void setPositions(const std::vector<glm::vec3>& chunkPositions);
 
 private:
+        std::mutex m;
         //remember that this is fixed for now
         static const int chunkDimensions = 16*16*16;
         static const int chunkSize = 16;

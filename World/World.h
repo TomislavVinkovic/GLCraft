@@ -21,6 +21,7 @@
 
 class World {
     private:
+        std::mutex m;
         Player* player;
         std::vector<Chunk*> chunks;
         Chunk* getChunkWorld(const glm::vec3& position);

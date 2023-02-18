@@ -57,6 +57,7 @@ ChunkBlock Chunk::block(const glm::vec3 &searchPosition, bool logInfo) const {
 
 void Chunk::addFace(
         const ChunkBlock& block,
+        const ChunkBlock& adjblock,
         const std::vector<GLfloat> &face,
         const glm::vec3 &blockPosition,
         const std::vector<GLfloat>& textureCoords
@@ -476,4 +477,12 @@ const std::vector<GLfloat> &Chunk::getWaterVertices() const {
 
 ABAB &Chunk::getABAB() {
     return abab;
+}
+
+void Chunk::setPosition(const glm::vec3 &pos) {
+    position = pos;
+}
+
+void Chunk::setDimensions(const glm::vec3 &dim) {
+    dimensions = dim;
 }

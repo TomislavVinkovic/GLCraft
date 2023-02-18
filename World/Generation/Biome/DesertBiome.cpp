@@ -1,7 +1,7 @@
 #include "DesertBiome.h"
 
 DesertBiome::DesertBiome(int seed)
-        : Biome(getNoiseParameters(), 1350, 500, seed)
+        : Biome(getNoiseParameters(), 1350, 1000, seed)
 {
 }
 

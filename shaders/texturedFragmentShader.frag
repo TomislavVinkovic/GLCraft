@@ -6,6 +6,7 @@ in float Opacity;
 in float Lighting;
 
 uniform sampler2D texture1;
+uniform vec3 underwaterColor;
 
 void main()
 {

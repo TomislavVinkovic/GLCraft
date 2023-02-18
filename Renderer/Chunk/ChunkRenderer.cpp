@@ -22,6 +22,8 @@ ChunkRenderer::ChunkRenderer(
 
         std::vector<glm::vec3> chunkPositions;
         world->generate();
+
+        shader.setVec3("underwaterColor", {0,0,1});
     }
 
 void ChunkRenderer::render(Camera &camera) {

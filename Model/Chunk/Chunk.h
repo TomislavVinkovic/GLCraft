@@ -80,6 +80,7 @@ class Chunk {
         //setters
         void addFace(
                 const ChunkBlock& block,
+                const ChunkBlock& adjBlock,
                 const std::vector<GLfloat>& face,
                 const glm::vec3& blockPosition,
                 const std::vector<GLfloat>& textureCoords
@@ -118,6 +119,8 @@ class Chunk {
         unsigned int getEBOWater() const;
 
         void setHasWater(bool water);
+        void setPosition(const glm::vec3& pos);
+        void setDimensions(const glm::vec3& dim);
 
         //operators
         Chunk operator=(Chunk chunk);

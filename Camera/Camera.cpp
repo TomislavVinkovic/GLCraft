@@ -14,6 +14,25 @@ void Camera::ProcessKeyboard(int direction, float deltaTime) {
     if(direction == Movement::RIGHT) {
         Position += Right * velocity;
     }
+
+    if(Position.x < 32.f) {
+        Position = {32.f, Position.y, Position.z};
+    }
+    if(Position.y < 0.f) {
+        Position = {Position.x, 0.f, Position.z};
+    }
+    if(Position.z < 32.f) {
+        Position = {Position.x, Position.y, 32.f};
+    }
+    if(Position.x > 32.f + 50*16.f) {
+        Position = {32.f + 50*16.f, Position.y, Position.z};
+    }
+    if(Position.y > 172.f) {
+        Position = {Position.x, 172.f, Position.z};
+    }
+    if(Position.z > 32.f + 50*16.f) {
+        Position = {Position.x, Position.y, 32.f + 50*16.f};
+    }
     //std::cout << Position.x << " " << Position.y << " " << Position.z << std::endl;
 }
 

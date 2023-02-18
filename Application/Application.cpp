@@ -30,6 +30,7 @@ void Application::runLoop() {
         //generiranje grafickih podataka
         context.state.world.updatePositions();
         context.state.world.generateNext();
+        context.state.world.sortChunksByDistanceToCamera(getCamera());
     }
     //ImGui cleanup
     ImGui_ImplGlfwGL3_Shutdown();

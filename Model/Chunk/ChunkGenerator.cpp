@@ -26,9 +26,6 @@ void ChunkGenerator::generate() {
     std::vector<std::thread> threads;
     for(auto& chunk : chunks) {
         auto f = [&]() {
-//            auto heightMap = createChunkHeightMap(chunk);
-//            auto biomeMap = createChunkBiomeMap(chunk);
-//            generateSmoothTerrain(chunk, heightMap, biomeMap);
             terrainGenerator.generateTerrainFor(chunk);
         };
         threads.push_back(std::thread(f));
@@ -103,7 +100,8 @@ void ChunkGenerator::addFace(
     if(shouldGenerateFace(chunk, block, adjBlockPos, adjChunkPosition, chunkMap)) {
         std::vector<GLfloat> texCoords;
         fillTextureCoords(block, texCoords, face);
-        chunk.addFace(block, face, position, texCoords);
+        auto adjBlock = chunk.block(adjBlockPos);
+        chunk.addFace(block, adjBlock, face, position, texCoords);
         no_faces++;
     }
 }
@@ -266,4 +264,8 @@ ChunkMap ChunkGenerator::generateChunkMap(std::vector<Chunk> &chunks) {
 
 std::vector<Chunk> &ChunkGenerator::getChunks() {
     return chunks;
+}
+
+int ChunkGenerator::getCurrentChunk() {
+    return currentChunk;
 }
