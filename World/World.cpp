@@ -17,6 +17,14 @@ void World::generate() {
     //then later in the rendering pipeline, chunks will be rendered one by one, reducing load times
     generator.setPositions(chunkPositions);
     generator.generate();
+
+    int y = 0;
+    for(auto& chunk : generator.getChunks()) {
+        if(chunk.getPosition().y > y && !chunk.getAirStatus()) {
+            y = chunk.getPosition().y;
+        }
+    }
+    player->setPosition({player->getPosition().x, y+16, player->getPosition().z});
 }
 
 //ne radi apsolutno nista kod ovoga, osim inicijalnog generiranja svijeta
@@ -66,47 +74,6 @@ void World::updatePositions() {
         auto* p = &chunkPositions.back();
         firstGeneration = false;
     }
-//    else {
-//        int playerX = static_cast<int>(floor(playerPos.x))/16;
-//        int playerZ = static_cast<int>(floor(playerPos.z))/16;
-//
-//        std::unordered_map<std::string, glm::vec3> pos;
-//        for(const auto& p : chunkPositions) {
-//            std::string key = std::to_string(static_cast<int>(p.x)) + " "
-//          + std::to_string(static_cast<int>(p.z));
-//            if(
-//                    pos.find(key) == pos.end()
-//                    || pos[key].y < p.y
-//            ) {
-//                pos[key] = p;
-//            }
-//        }
-//
-//        std::vector<glm::vec3> newPositions;
-//        //zasad cemo loadati 2 reda chunkova sa svake strane
-//        //i necemo micati stare chunkove
-//        for (int i = 0; i < 5; i++) {
-//            int minX = std::max(playerX  - i, 0);
-//            int minZ = std::max(playerZ  - i, 0);
-//            int maxX = playerX + i;
-//            int maxZ = playerZ + i;
-//
-//            for (int x = minX; x < maxX; ++x)
-//            {
-//                for (int z = minZ; z < maxZ; ++z)
-//                {
-//                    std::string key = std::to_string(static_cast<int>(x * 16)) + " "
-//                                      + std::to_string(static_cast<int>(z * 16));
-//                    if(pos.find(key) == pos.end()) {
-//                        newPositions.push_back({x * 16, 140 - 16, z*16});
-//                    }
-//                }
-//            }
-//        }
-//        if(!newPositions.empty()) {
-//            generator.addChunks(newPositions);
-//        }
-//    }
 }
 
 void World::generateNext() {
@@ -238,11 +205,24 @@ void World::editBlock(const glm::vec3 &position, const ChunkBlockData& blockData
     Chunk* chunk = getChunkWorld(position);
     std::vector<glm::vec3> surroundingChunkPositions{};
     if(chunk != nullptr) {
-        chunk->editBlock({
+        int b = chunk->editBlock({
          static_cast<int>(position.x),
          static_cast<int>(position.y),
          static_cast<int>(position.z),
         }, &blockData, surroundingChunkPositions);
+
+        if(b == -1) {
+            surroundingChunkPositions.clear();
+            chunk = getChunkWorld({position.x, position.y + 16, position.z});
+            if(chunk != nullptr) {
+                int b = chunk->editBlock({
+                 static_cast<int>(position.x),
+                 static_cast<int>(position.y)+16,
+                 static_cast<int>(position.z),
+                 }, &blockData, surroundingChunkPositions);
+            }
+        }
+
         //std::cout << "Breaking block at " << position.x << " " << position.y << " " << position.z << std::endl;
         std::vector<Chunk*> chunksToRegenerate;
         chunksToRegenerate.push_back(chunk);

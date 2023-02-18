@@ -315,15 +315,23 @@ const std::vector<GLfloat> &Chunk::getVertices() const {
 ///The first task is to edit whichever block is passed to the function
 ///The other task is to check whether or not that block is an edge block. If the given block is an edge block,
 ///Push back the positions of all chunks that are surrounding the block to the vector of chunks passed by refference
-void Chunk::editBlock(
+int Chunk::editBlock(
         const glm::vec3 &searchPosition,
         const ChunkBlockData* blockData,
         std::vector<glm::vec3>& surroundingChunkPositions
 ) {
     auto block = blockInner(searchPosition);
+    bool containedInY = searchPosition.y >= position.y && searchPosition.y < position.y + dimensions.y;
     if(block != blocks.end()) {
         checkEdgeBlock(searchPosition, surroundingChunkPositions);
         *block = ChunkBlock(searchPosition, blockData);
+        return 0;
+    }
+    else if(block == blocks.end() && !containedInY) {
+        return -1;
+    }
+    else {
+        return -2;
     }
 }
 
@@ -374,6 +382,11 @@ void Chunk::clearData() {
 }
 
 void Chunk::placeBlock(const glm::vec3 &pos, const ChunkBlockData* blockData) {
+
+    AdjacentChunkPositions adjPositions;
+    adjPositions.update(pos.x, pos.y, pos.z);
+
+
     //checking boundaries for now
     bool containedInX = pos.x >= position.x && pos.x < position.x + dimensions.x;
     bool containedInY = pos.y >= position.y && pos.y < position.y + dimensions.y;
@@ -391,7 +404,7 @@ void Chunk::placeBlock(const glm::vec3 &pos, const ChunkBlockData* blockData) {
     blocks[offset] = ChunkBlock(pos, blockData);
 }
 
-bool Chunk::getAirStatus() {
+bool Chunk::getAirStatus() const {
     return airChunk;
 }
 
@@ -405,7 +418,7 @@ void Chunk::sortByOpacity() {
     });
 }
 
-bool Chunk::getHasWater() {
+bool Chunk::getHasWater() const {
     return hasWater;
 }
 

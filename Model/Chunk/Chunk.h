@@ -71,8 +71,8 @@ class Chunk {
         const std::vector<GLuint>& getWaterIndices() const;
         const std::vector<GLfloat>& getWaterVertices() const;
         void clearData();
-        bool getAirStatus();
-        bool getHasWater();
+        bool getAirStatus() const;
+        bool getHasWater() const;
 
         //setters
         void addFace(
@@ -85,7 +85,7 @@ class Chunk {
             const glm::vec3& pos,
             const ChunkBlockData* blockData
         );
-        void editBlock(
+        int editBlock(
                 const glm::vec3& position,
                 const ChunkBlockData* blockData,
                 std::vector<glm::vec3>& surroundingBlockPositions

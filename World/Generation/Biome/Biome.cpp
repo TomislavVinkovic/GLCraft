@@ -28,3 +28,7 @@ int Biome::getPlantFrequency() const noexcept
 {
     return m_plantFreq;
 }
+
+const ChunkBlockData &Biome::getUndergroundBlock(Rand &rand) const {
+    return block_type::DirtBlock;
+}

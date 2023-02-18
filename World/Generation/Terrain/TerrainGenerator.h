@@ -11,6 +11,12 @@
 #include <vector>
 #include <array>
 
+static const int heightMapSize = 16*16;
+static const int biomeMapSize = 17*17;
+
+typedef std::array<int, biomeMapSize> BiomeMap;
+typedef std::array<int, heightMapSize> HeightMap;
+
 class TerrainGenerator {
 
     public:
@@ -20,24 +26,20 @@ class TerrainGenerator {
         int getMinimumSpawnHeight();
 
     private:
+        //27891 //najdrazi
+        //31245
         Random<std::minstd_rand> randomEngine;
         static const int chunkDimensions = 16*16*16;
         static const int chunkSize = 16;
-        static const int heightMapSize = chunkSize*chunkSize;
-        static const int biomeMapSize = (chunkSize+1)*(chunkSize + 1);
         static NoiseGenerator biomeNoiseGenerator;
         static NoiseGenerator heightMapGenerator;
-        Chunk* genChunk;
-        std::array<int, TerrainGenerator::heightMapSize> heightMap;
-        std::array<int, TerrainGenerator::biomeMapSize> biomeMap;
 
-        void setBlocks(int maxHeight);
+        void setBlocks(Chunk& chunk, int maxHeight, HeightMap& heightMap, BiomeMap& biomeMap);
         static void setupNoise();
-        void getHeightIn(int xMin, int zMin, int xMax, int zMax);
-        void getHeightMap();
-        void getBiomeMap();
+        void getHeightMap(Chunk& chunk, HeightMap& heightMap);
+        void getBiomeMap(Chunk& chunk, BiomeMap& biomeMap);
 
-        const Biome &getBiome(int x, int z) const;
+        const Biome &getBiome(int x, int z, BiomeMap& biomeMap) const;
 
 
         GrasslandBiome grassBiome;

@@ -2,20 +2,20 @@
 
 //nice hack to remember :)
 namespace {
-    const int seed1 = RandomSingleton::get().intInRange(424, 325322);
-    //const int seed2 = RandomSingleton::get().intInRange(424, 325322);
-    const int seed2 = 27891;
+    const int biomeSeed = RandomSingleton::get().intInRange(424, 325322);
+    const int heightSeed = RandomSingleton::get().intInRange(424, 325322);
 }
 
-NoiseGenerator TerrainGenerator::biomeNoiseGenerator(seed1 * 2);
-NoiseGenerator TerrainGenerator::heightMapGenerator(seed2);
+NoiseGenerator TerrainGenerator::biomeNoiseGenerator(biomeSeed * 2);
+NoiseGenerator TerrainGenerator::heightMapGenerator(heightSeed);
 
 TerrainGenerator::TerrainGenerator() :
-        grassBiome(seed1),
-        desertBiome(seed1),
-        oceanBiome(seed1),
-        forestBiome(seed1)
+        grassBiome(biomeSeed),
+        desertBiome(biomeSeed),
+        oceanBiome(biomeSeed),
+        forestBiome(biomeSeed)
 {
+    srand(time(NULL));
     setupNoise();
 }
 
@@ -37,142 +37,106 @@ void TerrainGenerator::setupNoise() {
 }
 
 void TerrainGenerator::generateTerrainFor(Chunk &chunk) {
-    genChunk = &chunk;
 
-    const auto& pos = genChunk->getPosition();
+    const auto& pos = chunk.getPosition();
     randomEngine.setSeed((static_cast<int>(pos.x) ^ static_cast<int>(pos.x)) << 2);
+    HeightMap heightMap;
+    BiomeMap biomeMap;
 
-    getBiomeMap();
-    getHeightMap();
+    getBiomeMap(chunk, biomeMap);
+    getHeightMap(chunk, heightMap);
 
     int maxHeight = *std::max(heightMap.begin(), heightMap.end());
 
     //water level is 64
-    maxHeight = std::max(maxHeight, biomeNoiseGenerator.getWaterLevel());
-    setBlocks(maxHeight);
+    maxHeight = std::max(maxHeight, heightMapGenerator.getWaterLevel());
+    setBlocks(chunk, maxHeight, heightMap, biomeMap);
 }
 
 int TerrainGenerator::getMinimumSpawnHeight() {
-    return biomeNoiseGenerator.getWaterLevel();
+    return heightMapGenerator.getWaterLevel();
 }
 
-void TerrainGenerator::setBlocks(int maxHeight) {
+void TerrainGenerator::setBlocks(Chunk& chunk, int maxHeight, HeightMap& heightMap, BiomeMap& biomeMap) {
     int waterLevel = biomeNoiseGenerator.getWaterLevel();
-    for (int y = 0; y < maxHeight + 1; y++)
-        for (int x = 0; x < chunkSize; x++)
-            for (int z = 0; z < chunkSize; z++) {
-                int height = heightMap[x * chunkSize + z];
-                auto &biome = getBiome(x, z);
+    const auto& chunkPosition = chunk.getPosition();
+    //I need to pass this empty vector to edit block
 
-                if (y > height) {
-                    if (y <= waterLevel) {
-                        genChunk->setHasWater(true);
-                        genChunk->placeBlock({x, y, z}, &block_type::WaterBlock);
-                    }
+    std::vector<glm::vec3> trees;
+
+    for(int z = chunkPosition.z; z < chunkPosition.z + chunkSize; z++) {
+        for(int x = chunkPosition.x; x < chunkPosition.x + chunkSize; x++) {
+            auto& biome = getBiome(x, z, biomeMap);
+            int height = heightMap[z%(chunkSize-1) * chunkSize + x%(chunkSize-1)];
+            for(int y = chunkPosition.y; y < chunkPosition.y + chunkSize; y++) {
+                //trees
+                if(y > height && y >= waterLevel) {
+                    //air block
                     continue;
                 }
-                else if (y == height) {
-                    if (y >= waterLevel) {
-                        if (y < waterLevel + 4) {
-                            genChunk->setAirStatus(false);
-                            genChunk->placeBlock({x, y, z},&biome.getBeachBlock(randomEngine));
-                            continue;
-                        }
-                          //I will not use trees and plants for now..
-//                        if (randomEngine.intInRange(0, biome.getTreeFrequency()) ==
-//                            5) {
-//                            trees.emplace_back(x, y + 1, z);
-//                        }
-//                        if (randomEngine.intInRange(0, biome.getPlantFrequency()) ==
-//                            5) {
-//                            plants.emplace_back(x, y + 1, z);
-//                        }
-                        genChunk->setAirStatus(false);
-                        genChunk->placeBlock(
-                                {x, y, z},
-                                &getBiome(x, z).getTopBlock(randomEngine)
-                        );
+
+                else {
+                    if (randomEngine.intInRange(0, biome.getTreeFrequency()) ==
+                        5 && y >= height - 6
+                        && y > waterLevel) {
+                        trees.push_back({x, y + 1, z});
+                    }
+                    if(y > height and y < waterLevel) {
+                        chunk.setAirStatus(false);
+                        chunk.placeBlock({x,y,z}, &block_type::WaterBlock);
+                        chunk.setHasWater(true);
+                    }
+                    else if(y == height && y > waterLevel) {
+                        chunk.setAirStatus(false);
+                        chunk.placeBlock({x,y,z}, &biome.getTopBlock(randomEngine));
+                    }
+                    else if(y > height - 4 && y < waterLevel) {
+                        chunk.setAirStatus(false);
+                        chunk.placeBlock({x,y,z}, &biome.getUnderWaterBlock(randomEngine));
+                    }
+                    else if(y > height - 4) {
+                        chunk.setAirStatus(false);
+                        chunk.placeBlock({x,y,z}, &biome.getUndergroundBlock(randomEngine));
                     }
                     else {
-                        genChunk->setAirStatus(false);
-                        genChunk->placeBlock(
-                                {x, y, z},
-                                &biome.getUnderWaterBlock(randomEngine)
-                       );
+                        chunk.setAirStatus(false);
+                        chunk.placeBlock({x,y,z}, &block_type::CobblestoneBlock);
                     }
                 }
-                else if (y > height - 3) {
-                    genChunk->setAirStatus(false);
-                    genChunk->placeBlock({x, y, z}, &block_type::DirtBlock);
-                }
-                else {
-                    genChunk->setAirStatus(false);
-                    genChunk->placeBlock({x, y, z}, &block_type::CobblestoneBlock);
-                }
             }
+        }
+    }
+
+    for(const auto& tree : trees) {
+        int x = tree.x;
+        int z = tree.z;
+
+        getBiome(x, z, biomeMap).makeTree(randomEngine, chunk, x, tree.y, z);
+    }
 
 }
 
-void TerrainGenerator::getHeightIn(int xMin, int zMin, int xMax, int zMax) {
-//    auto getHeightAt = [&](int x, int z) {
-//        const Biome &biome = getBiome(x, z);
-//        return biome.getHeight(x, z, genChunk->getPosition().x,
-//                               genChunk->getPosition().z);
-//    };
-//
-//    float bottomLeft = static_cast<float>(getHeightAt(xMin, zMin));
-//    float bottomRight = static_cast<float>(getHeightAt(xMax, zMin));
-//    float topLeft = static_cast<float>(getHeightAt(xMin, zMax));
-//    float topRight = static_cast<float>(getHeightAt(xMax, zMax));
-//
-//    for (int x = xMin; x < xMax; ++x)
-//        for (int z = zMin; z < zMax; ++z) {
-//            if (x == chunkSize)
-//                continue;
-//            if (z == chunkSize)
-//                continue;
-//
-//            float h = InterpolationMaths::smoothInterpolation(
-//                    bottomLeft, topLeft, bottomRight, topRight,
-//                    static_cast<float>(xMin), static_cast<float>(xMax),
-//                    static_cast<float>(zMin), static_cast<float>(zMax),
-//                    static_cast<float>(x), static_cast<float>(z));
-//
-//            heightMap[x * chunkSize + z] = static_cast<int>(h);
-//        }
-    const auto& blocks = genChunk->getBlocks();
-    const auto& chunkPosition = genChunk->getPosition();
+void TerrainGenerator::getHeightMap(Chunk& chunk, HeightMap& heightMap) {
+    const auto& blocks = chunk.getBlocks();
+    const auto& chunkPosition = chunk.getPosition();
     //generating a height map for same x and z positions
-    for(int i = 0; i <= 255; i++) {
+    for(int i = 0; i < heightMapSize; i++) {
         const auto& blockPosition = blocks[i].getPosition();
         heightMap[i] = heightMapGenerator.getHeight(blockPosition.x, blockPosition.z, chunkPosition.x, chunkPosition.z);
     }
 }
 
-void TerrainGenerator::getHeightMap() {
-    constexpr static auto HALF_CHUNK = chunkSize / 2;
-    constexpr static auto CHUNK = chunkSize;
-
-    getHeightIn(0, 0, HALF_CHUNK, HALF_CHUNK);
-    getHeightIn(HALF_CHUNK, 0, CHUNK, HALF_CHUNK);
-    getHeightIn(0, HALF_CHUNK, HALF_CHUNK, CHUNK);
-    getHeightIn(HALF_CHUNK, HALF_CHUNK, CHUNK, CHUNK);
-}
-
-void TerrainGenerator::getBiomeMap() {
-    auto pos = genChunk->getPosition();
-
-    for (int x = 0; x < chunkSize + 1; x++) {
-        for (int z = 0; z < chunkSize + 1; z++) {
-            double h = biomeNoiseGenerator.getHeight(x, z, pos.x + 10,
-                                                 pos.y + 10);
-            biomeMap[x * (chunkSize+1) + z] = static_cast<int>(h);
-        }
+void TerrainGenerator::getBiomeMap(Chunk& chunk, BiomeMap& biomeMap) {
+    auto pos = chunk.getPosition();
+    const auto& blocks = chunk.getBlocks();
+    for(int i = 0; i < biomeMapSize; i++) {
+        const auto& blockPosition = blocks[i].getPosition();
+        biomeMap[i] = biomeNoiseGenerator.getHeight(blockPosition.x, blockPosition.z, pos.x + 10, pos.z + 10);
     }
 }
 
-const Biome &TerrainGenerator::getBiome(int x, int z) const {
-    int biomeValue = biomeMap[x * (chunkSize+1) + z];
+const Biome &TerrainGenerator::getBiome(int x, int z, BiomeMap& biomeMap) const {
+    int biomeValue = biomeMap[z%(chunkSize) * chunkSize + x%(chunkSize)];
 
     if (biomeValue > 160) {
         return oceanBiome;
@@ -183,13 +147,10 @@ const Biome &TerrainGenerator::getBiome(int x, int z) const {
     else if (biomeValue > 130) {
         return forestBiome;
     }
-//    else if (biomeValue > 120) {
-//        return m_temperateForest;
-//    }
     else if (biomeValue > 110) {
         return forestBiome;
     }
-    else if (biomeValue > 100) {
+    else if (biomeValue > 80) {
         return grassBiome;
     }
     else {
