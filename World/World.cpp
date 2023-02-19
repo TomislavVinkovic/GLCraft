@@ -258,7 +258,7 @@ void World::setPlayer(Player *player) {
 void World::sortChunksByDistanceToCamera(const Camera &camera) {
     auto p = camera.Position;
 
-    //sowrt the chunks by distance to the camera
+    //sort the chunks by distance to the camera
     std::sort(chunks.begin(), chunks.end(), [&](Chunk*& a, Chunk*& b){
         return (
             pow(a->getPosition().x - p.x, 2)

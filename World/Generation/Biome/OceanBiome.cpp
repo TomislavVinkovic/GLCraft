@@ -16,8 +16,7 @@ const ChunkBlockData &OceanBiome::getUnderWaterBlock(Rand &rand) const {
 }
 
 void OceanBiome::makeTree(Rand &rand, Chunk &chunk, int x, int y, int z) const {
-    return; //no tree here for now
-    //TODO: ADD TREES HERE :D
+    return; //no tree here
 }
 
 NoiseParameters OceanBiome::getNoiseParameters() {
