@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 project(GLCraft)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
 #add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 include_directories(src Util World Maths  include/glad include/stb_image include/glm include/imgui Shader Application Camera State Renderer Model Texture Model/Chunk Player World NoiseGenerator Text)
 

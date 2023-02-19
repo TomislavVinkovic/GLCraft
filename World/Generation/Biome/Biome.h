@@ -19,12 +19,14 @@ public:
     virtual const ChunkBlockData& getUnderWaterBlock(Rand &rand) const = 0;
     virtual const ChunkBlockData& getUndergroundBlock(Rand &rand) const;
     virtual const ChunkBlockData& getBeachBlock(Rand &rand) const;
+    virtual const ChunkBlockData& getMineralBlock(Rand &rand) const;
     virtual void makeTree(Rand &rand, Chunk &chunk, int x, int y,
                           int z) const = 0;
 
     int getHeight(int x, int z, int chunkX, int chunkZ) const;
     int getTreeFrequency() const noexcept;
     int getPlantFrequency() const noexcept;
+    int getMineralFrequency() const noexcept;
 
 protected:
     virtual NoiseParameters getNoiseParameters() = 0;
@@ -33,4 +35,5 @@ private:
     NoiseGenerator m_heightGenerator;
     int m_treeFreq;
     int m_plantFreq;
+    int mineralFreq = 1000;
 };
