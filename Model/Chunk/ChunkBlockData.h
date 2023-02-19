@@ -141,35 +141,5 @@ namespace block_type {
             {32,256},{16,240},
             {32,256},{16,240},{32,256},true
     );
-    const ChunkBlockData MathosBlock = ChunkBlockData(
-            ChunkBlockType::Mathos, "Mathos",
-            {96,224}, {112, 240},
-            {96,224}, {112, 240},
-            {96,224}, {112, 240},
-            {96,224}, {112, 240},
-            {96,224}, {112, 240},
-            {96,224}, {112, 240},
-            true
-    );
-    const ChunkBlockData CoalBlock = ChunkBlockData(
-            ChunkBlockType::Coal, "Coal",
-            {160,224}, {176,240},
-            {160,224}, {176,240},
-            {160,224}, {176,240},
-            {160,224}, {176,240},
-            {160,224}, {176,240},
-            {160,224}, {176,240},
-            true
-    );
-    const ChunkBlockData MathosSinisterBlock = ChunkBlockData(
-            ChunkBlockType::MathosSinister, "MathosSinister",
-            {176,224}, {192,240},
-            {176,224}, {192,240},
-            {176,224}, {192,240},
-            {176,224}, {192,240},
-            {176,224}, {192,240},
-            {176,224}, {192,240},
-            true
-    );
     const ChunkBlockData& getBlockDataByType(const ChunkBlockType& blockType);
 };

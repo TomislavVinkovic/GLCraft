@@ -16,8 +16,5 @@ enum class ChunkBlockType :  Block_t
     Cactus,
     Bush,
     Shrug,
-    Flower,
-    Mathos,
-    Coal,
-    MathosSinister
+    Flower
 };

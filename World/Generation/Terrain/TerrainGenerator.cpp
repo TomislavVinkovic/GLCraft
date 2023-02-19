@@ -115,15 +115,7 @@ void TerrainGenerator::setBlocks(Chunk& chunk, int maxHeight, HeightMap& heightM
                     }
                     else {
                         chunk.setAirStatus(false);
-                        auto r = randomEngine.intInRange(0, biome.getMineralFrequency());
-                        if(
-                                r > 0 && r <= 20
-                        ) {
-                            chunk.placeBlock({x,y,z}, &biome.getMineralBlock(randomEngine));
-                        }
-                        else {
-                            chunk.placeBlock({x,y,z}, &block_type::CobblestoneBlock);
-                        }
+                        chunk.placeBlock({x,y,z}, &block_type::CobblestoneBlock);
                     }
                 }
             }

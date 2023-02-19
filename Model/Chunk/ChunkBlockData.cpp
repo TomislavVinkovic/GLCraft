@@ -35,15 +35,6 @@ namespace block_type {
         if(blockType == ChunkBlockType::Flower) {
             return FlowerBlock;
         }
-        if(blockType == ChunkBlockType::Mathos) {
-            return MathosBlock;
-        }
-        if(blockType == ChunkBlockType::MathosSinister) {
-            return MathosSinisterBlock;
-        }
-        if(blockType == ChunkBlockType::Coal) {
-            return CoalBlock;
-        }
         else return GrassBlock;
     }
 }
